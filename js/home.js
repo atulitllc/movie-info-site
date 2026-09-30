@@ -4,10 +4,17 @@
   const status = document.getElementById('status');
   if (!grid || !window.ReelIndex) return;
 
+  const FALLBACK_POSTER =
+    "data:image/svg+xml," +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect fill="#1a1f2b" width="100%" height="100%"/><text x="50%" y="50%" fill="#9aa3b5" text-anchor="middle" font-family="sans-serif" font-size="18">No poster</text></svg>'
+    );
+
   function card(m){
     const href = `movies/${m.slug}/`;
+    const poster = m.poster || FALLBACK_POSTER;
     return `<a class="card" href="${href}">
-      <img class="card-poster" src="${m.poster}" alt="${m.title} poster" loading="lazy" width="300" height="450"/>
+      <img class="card-poster" src="${poster}" alt="${m.title} poster" loading="lazy" width="300" height="450" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}'"/>
       <div class="card-body">
         <h2 class="card-title">${m.title}</h2>
         <div class="card-meta">${m.year} · ${m.rating || ''} · ★ ${Number(m.voteAverage||0).toFixed(1)}</div>
@@ -24,7 +31,7 @@
     search.addEventListener('input', ()=>{
       const q = search.value.trim().toLowerCase();
       const all = ((ReelIndex.listMovies&&ReelIndex.listMovies())||(ReelIndex.getMovies&&ReelIndex.getMovies())||Object.values(ReelIndex.MOVIES||{}));
-      render(!q ? all : all.filter(m => (m.title+m.year+m.genres.join(' ')).toLowerCase().includes(q)));
+      render(!q ? all : all.filter(m => (m.title+m.year+(m.genres||[]).join(' ')).toLowerCase().includes(q)));
     });
   }
 

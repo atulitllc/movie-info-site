@@ -15,7 +15,7 @@
       slug: "tom-holland",
       name: "Tom Holland",
       tmdbId: 1136406,
-      photo: IMG + "/w500/bBRlrpQmXod8ept74UmfOCKJq2p.jpg",
+      photo: IMG + "/w500/xKBAaPIa1c7tzZD3Y0MhBLv4hPE.jpg",
       biography:
         "English actor best known for portraying Spider-Man in the Marvel Cinematic Universe. Holland brings athletic physicality and youthful energy to roles ranging from coming-of-age dramas to blockbuster action.",
       birthday: "1996-06-01",
@@ -26,7 +26,7 @@
       slug: "christopher-nolan",
       name: "Christopher Nolan",
       tmdbId: 525,
-      photo: IMG + "/w500/xuAIuYSmsUzKlUMNKDZ72DUNlVw.jpg",
+      photo: IMG + "/w500/xuAIuYSmsUzKlUMBFGVZaWsY3DZ.jpg",
       biography:
         "British-American filmmaker celebrated for cerebral blockbusters that blend spectacle with intricate narrative structure. Nolan wrote and directed The Odyssey, Interstellar, Oppenheimer, and many other landmark films.",
       birthday: "1970-07-30",
@@ -34,14 +34,16 @@
       knownFor: [
         { title: "The Odyssey", slug: "the-odyssey" },
         { title: "Interstellar", slug: "interstellar" },
-        { title: "Oppenheimer", slug: "oppenheimer" }
+        { title: "Oppenheimer", slug: "oppenheimer" },
+        { title: "Inception", slug: "inception" },
+        { title: "The Dark Knight", slug: "the-dark-knight" }
       ]
     },
     "matt-damon": {
       slug: "matt-damon",
       name: "Matt Damon",
       tmdbId: 1892,
-      photo: IMG + "/w500/elSlNgV8xVifsbHpFsqrPGxJToZ.jpg",
+      photo: IMG + "/w500/aCvBXTAR9B1qRjIRzMBYhhbm1fR.jpg",
       biography:
         "American actor and producer known for the Bourne franchise, Good Will Hunting, and collaborations with major directors. Damon stars as Odysseus in Christopher Nolan's The Odyssey and appears in Interstellar and Oppenheimer.",
       birthday: "1970-10-08",
@@ -56,29 +58,29 @@
       slug: "denis-villeneuve",
       name: "Denis Villeneuve",
       tmdbId: 137427,
-      photo: IMG + "/w500/zdDx9Xs93UIrJ4aEC8zcFOKpm0I.jpg",
+      photo: IMG + "/w500/zdDx9Xs93UIrJFWYApYR28J8M6b.jpg",
       biography:
         "Canadian filmmaker renowned for atmospheric science fiction and tightly controlled thrillers. Villeneuve directed Dune: Part Two, expanding Frank Herbert's epic with striking visual storytelling.",
       birthday: "1967-10-03",
       placeOfBirth: "Trois-Rivières, Québec, Canada",
-      knownFor: [{ title: "Dune: Part Two", slug: "dune-part-two" }]
+      knownFor: [{ title: "Dune: Part Two", slug: "dune-part-two" }, { title: "Dune", slug: "dune" }]
     },
     "timothee-chalamet": {
       slug: "timothee-chalamet",
       name: "Timothée Chalamet",
       tmdbId: 1190668,
-      photo: IMG + "/w500/BE2sdjpYH9n48Lr9Wq5YgM3wR2.jpg",
+      photo: IMG + "/w500/dFxpwRpmzpVfP1zjluH68DeQhyj.jpg",
       biography:
         "American-French actor who rose to prominence with Call Me by Your Name and has since headlined major studio films. Chalamet portrays Paul Atreides in Denis Villeneuve's Dune saga.",
       birthday: "1995-12-27",
       placeOfBirth: "New York City, New York, USA",
-      knownFor: [{ title: "Dune: Part Two", slug: "dune-part-two" }]
+      knownFor: [{ title: "Dune: Part Two", slug: "dune-part-two" }, { title: "Dune", slug: "dune" }]
     },
     zendaya: {
       slug: "zendaya",
       name: "Zendaya",
       tmdbId: 505710,
-      photo: IMG + "/w500/3Wdnr5rY0U7E7F4v9YQpE3xYqJr.jpg",
+      photo: IMG + "/w500/1qup8tSt95HLbcy2c2xrx4iJNxv.jpg",
       biography:
         "American actress and singer who transitioned from Disney Channel stardom to acclaimed dramatic and genre roles. Zendaya plays Athena in The Odyssey and Chani in Dune: Part Two.",
       birthday: "1996-09-01",
@@ -92,7 +94,7 @@
       slug: "anne-hathaway",
       name: "Anne Hathaway",
       tmdbId: 1813,
-      photo: IMG + "/w500/tLelKoHNkjXqO5bW2I4n0YqJ9Xv.jpg",
+      photo: IMG + "/w500/nbccV2pMoyLTCeg5DQip24Eq0Jp.jpg",
       biography:
         "Academy Award-winning American actress known for both romantic comedies and intense dramatic turns. Hathaway plays Penelope in The Odyssey and Brand in Interstellar.",
       birthday: "1982-11-12",
@@ -106,7 +108,7 @@
       slug: "robert-pattinson",
       name: "Robert Pattinson",
       tmdbId: 113668,
-      photo: IMG + "/w500/8Cq1vJqJqJqJqJqJqJqJqJqJqJq.jpg",
+      photo: IMG + "/w500/sRUM2u8qLcsOaTm0jGJGlOEQhlQ.jpg",
       biography:
         "English actor who reinvented his career after the Twilight series with bold choices in art-house and blockbuster cinema. Pattinson portrays Antinous in Christopher Nolan's The Odyssey.",
       birthday: "1986-05-13",
@@ -117,7 +119,7 @@
       slug: "lupita-nyongo",
       name: "Lupita Nyong'o",
       tmdbId: 1267329,
-      photo: IMG + "/w500/y40Wu1IxhL8s6G3qWpJqJqJqJqJ.jpg",
+      photo: IMG + "/w500/y40Wu1T742kynOqtwXASc5Qgm49.jpg",
       biography:
         "Kenyan-Mexican actress and Academy Award winner for 12 Years a Slave. Nyong'o brings gravitas to mythic roles as Helen of Troy and Clytemnestra in The Odyssey.",
       birthday: "1983-03-01",
@@ -128,7 +130,7 @@
       slug: "charlize-theron",
       name: "Charlize Theron",
       tmdbId: 6885,
-      photo: IMG + "/w500/1Ilv6ryHUv6rt9zIsOGpIUKuHVy.jpg",
+      photo: IMG + "/w500/gd7ShD0yt4bsR2STeQ19KQ6hvXL.jpg",
       biography:
         "South African-American actress and producer, Oscar-winning star of Monster and Mad Max: Fury Road. Theron plays the nymph Calypso in Christopher Nolan's The Odyssey.",
       birthday: "1975-08-07",
@@ -139,7 +141,7 @@
       slug: "emma-thomas",
       name: "Emma Thomas",
       tmdbId: 5911,
-      photo: IMG + "/w500/placeholder-producer.jpg",
+      photo: IMG + "/w500/2HMtZZwlw3G06XV93ZmPArzWZ7a.jpg",
       biography:
         "British film producer and longtime collaborator with Christopher Nolan. Thomas has produced The Odyssey, Interstellar, Oppenheimer, and many of Nolan's most ambitious projects.",
       birthday: "1971-12-09",

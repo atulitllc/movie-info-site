@@ -184,7 +184,12 @@
   }
 
   const hero = document.getElementById("detail-hero");
-  if (hero) hero.style.setProperty("--backdrop", "url('" + movie.backdrop + "')");
+  if (hero) {
+    var bd = movie.backdrop || "";
+    // Prefer w780 paths for full-bleed heroes
+    if (bd.indexOf("/original/") !== -1) bd = bd.replace("/original/", "/w780/");
+    hero.style.setProperty("--backdrop", "url('" + bd + "')");
+  }
   const poster = document.getElementById("poster");
   if (poster) {
     poster.src = movie.poster;
@@ -204,16 +209,26 @@
     const items = [
       movie.year,
       movie.rating,
-      hoursMinutes(movie.runtime),
-      movie.voteAverage ? "★ " + Number(movie.voteAverage).toFixed(1) : null
+      hoursMinutes(movie.runtime)
     ]
       .concat(movie.genres || [])
       .filter(Boolean);
     chips.innerHTML = items
       .map(function (c, i) {
-        return '<span class="chip' + (i < 4 ? " accent" : "") + '">' + c + "</span>";
+        return '<span class="chip' + (i < 3 ? " accent" : "") + '">' + c + "</span>";
       })
       .join("");
+  }
+
+  const scoreRing = document.getElementById("score-ring");
+  const scoreValue = document.getElementById("score-value");
+  const scoreLabel = document.getElementById("score-label");
+  if (scoreRing && movie.voteAverage != null) {
+    var pct = Math.round(Number(movie.voteAverage) * 10);
+    scoreRing.style.setProperty("--p", String(pct));
+    if (scoreValue) scoreValue.textContent = pct + "%";
+    scoreRing.hidden = false;
+    if (scoreLabel) scoreLabel.hidden = false;
   }
 
   function castCardHtml(p) {
@@ -243,7 +258,7 @@
     const inner =
       '<img class="cast-photo" src="' +
       photo +
-      '" alt="" width="64" height="64" loading="lazy" onerror="this.onerror=null;this.src=\'data:image/svg+xml,' +
+      '" alt="" width="90" height="90" loading="lazy" onerror="this.onerror=null;this.src=\'data:image/svg+xml,' +
       encodeURIComponent(
         '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#1a1f2b" width="100%" height="100%"/><text x="50%" y="54%" fill="#e8b86d" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="32">' +
           initial +

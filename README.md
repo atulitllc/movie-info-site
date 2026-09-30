@@ -1,30 +1,30 @@
-# ReelIndex (movie-info-site)
+# ReelIndex
 
-SEO-first static movie info site prototype for ATULIT LLC.
+SEO-friendly static movie-info site (GitHub Pages) with cinematic detail pages, cast, trailers, where-to-watch, related titles, person pages, and light/dark theme.
 
-## Open locally
-```bash
-cd movie-info-site
-python3 -m http.server 8080
-```
-Then visit http://localhost:8080/
-
-## Structure
-- `/` homepage grid
-- `/movies/<slug>/` detail pages (cast photos, trailer, where-to-watch cards, related movies)
-- `/people/<slug>/` person pages (bio + known-for links back to movies)
-
-Add a movie in `js/data.js` + a folder under `movies/`. Add a person in `js/people-data.js` + a folder under `people/`.
+**Live:** https://atulitllc.github.io/movie-info-site/
 
 ## Features
-- Bidirectional movie ↔ person links
-- YouTube trailers (`trailerYouTubeId`) with optional TMDB `/videos` refresh
-- Subscription + free (ads) watch-provider cards (Simple Icons CDN)
-- Cast cards with photos linking to person pages
-- Related movies grid
 
-## TMDB
-Optional API key on the homepage refreshes live details. Embedded fallback works without a key.
+- 20 movies with verified TMDB `image.tmdb.org` posters (`w500`), backdrops (`w780`), and cast photos (`w185`)
+- Full-bleed cinematic detail heroes (poster overlay, score ring, horizontal cast scroller)
+- Light/dark mode toggle (persisted as `theme=light|dark` in `localStorage`; default dark)
+- Person pages linked from cast/crew
+- Optional TMDB API key refresh for The Odyssey
 
-## Deploy
-GitHub Pages from `main` (root). Canonical base: `https://atulitllc.github.io/movie-info-site/`
+## Structure
+
+- `index.html` — home grid + search
+- `movies/<slug>/` — per-title SEO pages
+- `people/<slug>/` — person bios
+- `js/data.js` — movie catalog
+- `js/people-data.js` — people catalog
+- `css/styles.css` — themes + layout
+
+## Local
+
+Open `index.html` or serve the folder:
+
+```bash
+python3 -m http.server 8080
+```
