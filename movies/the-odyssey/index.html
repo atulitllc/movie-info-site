@@ -50,15 +50,24 @@
     </div>
   </header>
   <main class="container">
-    <article>
+        <article>
+      <section class="section" id="trailer-section" hidden>
+        <h2>Trailer</h2>
+        <div id="trailer"></div>
+      </section>
       <section class="section"><h2>Storyline</h2><p id="overview"></p></section>
       <section class="section"><h2>Cast</h2><div class="cast-grid" id="cast"></div></section>
       <section class="section"><h2>Director &amp; Producers</h2><div id="crew"></div></section>
       <section class="section"><h2>Where to watch</h2><div class="watch" id="watch"></div></section>
+      <section class="section" id="related-section" hidden>
+        <h2>You might also like</h2>
+        <div class="related-grid" id="related"></div>
+      </section>
     </article>
   </main>
   <footer class="site-footer"><div class="container"><span>© ReelIndex</span><span>Data: TMDB + official materials</span></div></footer>
   <script src="../../js/data.js"></script>
+  <script src="../../js/people-data.js"></script>
   <script src="../../js/tmdb.js"></script>
   <script src="../../js/detail.js"></script>
 </body>

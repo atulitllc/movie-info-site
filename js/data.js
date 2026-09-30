@@ -23,36 +23,46 @@
         "https://dx35vtwkllhj9.cloudfront.net/universalstudios/the-odyssey/images/regions/us/updates3/onesheet.jpg",
       backdrop:
         "https://dx35vtwkllhj9.cloudfront.net/universalstudios/the-odyssey/images/portrait_bg.jpg",
+      trailerYouTubeId: "Mzw2ttJD2qQ",
       director: "Christopher Nolan",
       writers: ["Christopher Nolan"],
       producers: ["Emma Thomas", "Christopher Nolan"],
       executiveProducer: "Thomas Hayslip",
+      related: ["interstellar", "oppenheimer", "dune-part-two"],
       cast: [
-        { name: "Matt Damon", character: "Odysseus" },
-        { name: "Tom Holland", character: "Telemachus" },
-        { name: "Anne Hathaway", character: "Penelope" },
-        { name: "Robert Pattinson", character: "Antinous" },
-        { name: "Lupita Nyong'o", character: "Helen of Troy / Clytemnestra" },
-        { name: "Zendaya", character: "Athena" },
-        { name: "Charlize Theron", character: "Calypso" },
-        { name: "Himesh Patel", character: "Eurylochus" },
-        { name: "Samantha Morton", character: "Circe" },
-        { name: "John Leguizamo", character: "Eumaeus" },
-        { name: "Jon Bernthal", character: "Menelaus" },
-        { name: "Travis Scott", character: "Bard" },
-        { name: "Corey Hawkins", character: "Polybus" },
-        { name: "Elliot Page", character: "Sinon" },
-        { name: "Mia Goth", character: "Melantho" },
-        { name: "Benny Safdie", character: "Agamemnon" }
+        { name: "Matt Damon", character: "Odysseus", photo: "https://image.tmdb.org/t/p/w185/elSlNgV8xVifsbHpFsqrPGxJToZ.jpg" },
+        { name: "Tom Holland", character: "Telemachus", photo: "https://image.tmdb.org/t/p/w185/bBRlrpQmXod8ept74UmfOCKJq2p.jpg" },
+        { name: "Anne Hathaway", character: "Penelope", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EA%3C/text%3E%3C/svg%3E" },
+        { name: "Robert Pattinson", character: "Antinous", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3ER%3C/text%3E%3C/svg%3E" },
+        { name: "Lupita Nyong'o", character: "Helen of Troy / Clytemnestra", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EL%3C/text%3E%3C/svg%3E" },
+        { name: "Zendaya", character: "Athena", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EZ%3C/text%3E%3C/svg%3E" },
+        { name: "Charlize Theron", character: "Calypso", photo: "https://image.tmdb.org/t/p/w185/1Ilv6ryHUv6rt9zIsOGpIUKuHVy.jpg" },
+        { name: "Himesh Patel", character: "Eurylochus", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EH%3C/text%3E%3C/svg%3E" },
+        { name: "Samantha Morton", character: "Circe", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3ES%3C/text%3E%3C/svg%3E" },
+        { name: "John Leguizamo", character: "Eumaeus", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EJ%3C/text%3E%3C/svg%3E" },
+        { name: "Jon Bernthal", character: "Menelaus", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EJ%3C/text%3E%3C/svg%3E" },
+        { name: "Travis Scott", character: "Bard", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3ET%3C/text%3E%3C/svg%3E" },
+        { name: "Corey Hawkins", character: "Polybus", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EC%3C/text%3E%3C/svg%3E" },
+        { name: "Elliot Page", character: "Sinon", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EE%3C/text%3E%3C/svg%3E" },
+        { name: "Mia Goth", character: "Melantho", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EM%3C/text%3E%3C/svg%3E" },
+        { name: "Benny Safdie", character: "Agamemnon", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EB%3C/text%3E%3C/svg%3E" }
       ],
-      watch: [
-        { label: "In Theaters", note: "Universal · Jul 17, 2026 (US)" },
-        { label: "IMAX", note: "Premium large format" },
-        {
-          label: "TMDB",
-          href: "https://www.themoviedb.org/movie/1368337-the-odyssey"
-        }
-      ]
+      watch: {
+        paid: [
+          { id: "theaters", label: "In Theaters", note: "Universal · Jul 17, 2026 (US)", href: "https://www.fandango.com/" },
+          { id: "imax", label: "IMAX", note: "Premium large format", href: "https://www.imax.com/" },
+          { id: "netflix", label: "Netflix", note: "Coming later · availability varies", href: "https://www.netflix.com/" },
+          { id: "max", label: "Max", note: "Availability varies", href: "https://www.max.com/" }
+        ],
+        free: [
+          { id: "tubi", label: "Tubi", note: "Check region · may arrive later", href: "https://tubitv.com/" },
+          { id: "pluto", label: "Pluto TV", note: "Availability varies", href: "https://pluto.tv/" },
+          { id: "plex", label: "Plex", note: "Availability varies", href: "https://www.plex.tv/" }
+        ],
+        other: [
+          { id: "tmdb", label: "TMDB", href: "https://www.themoviedb.org/movie/1368337-the-odyssey" }
+        ]
+      }
     },
 
     interstellar: {
@@ -70,24 +80,33 @@
         "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the vast distances involved in an interstellar voyage.",
       poster: IMG + "/w500/gEU2QniE6E77NI6lCU6M61Gee0E.jpg",
       backdrop: IMG + "/original/xJHokMbljvjADYdit5fK5VQsXEG.jpg",
+      trailerYouTubeId: "zSWdZVtXT7E",
       director: "Christopher Nolan",
       writers: ["Jonathan Nolan", "Christopher Nolan"],
       producers: ["Emma Thomas", "Christopher Nolan", "Lynda Obst"],
       executiveProducer: "",
+      related: ["the-odyssey", "oppenheimer", "dune-part-two"],
       cast: [
-        { name: "Matthew McConaughey", character: "Cooper" },
-        { name: "Anne Hathaway", character: "Brand" },
-        { name: "Jessica Chastain", character: "Murph" },
-        { name: "Michael Caine", character: "Professor Brand" },
-        { name: "Matt Damon", character: "Mann" }
+        { name: "Matthew McConaughey", character: "Cooper", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EM%3C/text%3E%3C/svg%3E" },
+        { name: "Anne Hathaway", character: "Brand", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EA%3C/text%3E%3C/svg%3E" },
+        { name: "Jessica Chastain", character: "Murph", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EJ%3C/text%3E%3C/svg%3E" },
+        { name: "Michael Caine", character: "Professor Brand", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EM%3C/text%3E%3C/svg%3E" },
+        { name: "Matt Damon", character: "Mann", photo: "https://image.tmdb.org/t/p/w185/elSlNgV8xVifsbHpFsqrPGxJToZ.jpg" }
       ],
-      watch: [
-        { label: "Paramount+", note: "Streaming (availability varies)" },
-        {
-          label: "TMDB",
-          href: "https://www.themoviedb.org/movie/157336-interstellar"
-        }
-      ]
+      watch: {
+        paid: [
+          { id: "paramount-plus", label: "Paramount+", note: "Streaming (availability varies)", href: "https://www.paramountplus.com/" },
+          { id: "amazon-prime", label: "Prime Video", note: "Rent or buy", href: "https://www.amazon.com/gp/video/storefront" },
+          { id: "apple", label: "Apple TV", note: "Rent or buy", href: "https://tv.apple.com/" }
+        ],
+        free: [
+          { id: "tubi", label: "Tubi", note: "Check region", href: "https://tubitv.com/" },
+          { id: "plex", label: "Plex", note: "Availability varies", href: "https://www.plex.tv/" }
+        ],
+        other: [
+          { id: "tmdb", label: "TMDB", href: "https://www.themoviedb.org/movie/157336-interstellar" }
+        ]
+      }
     },
 
     oppenheimer: {
@@ -105,24 +124,33 @@
         "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
       poster: IMG + "/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
       backdrop: IMG + "/original/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg",
+      trailerYouTubeId: "uYPbbksJxIg",
       director: "Christopher Nolan",
       writers: ["Christopher Nolan"],
       producers: ["Emma Thomas", "Charles Roven", "Christopher Nolan"],
       executiveProducer: "",
+      related: ["the-odyssey", "interstellar"],
       cast: [
-        { name: "Cillian Murphy", character: "J. Robert Oppenheimer" },
-        { name: "Emily Blunt", character: "Kitty Oppenheimer" },
-        { name: "Matt Damon", character: "Leslie Groves" },
-        { name: "Robert Downey Jr.", character: "Lewis Strauss" },
-        { name: "Florence Pugh", character: "Jean Tatlock" }
+        { name: "Cillian Murphy", character: "J. Robert Oppenheimer", photo: "https://image.tmdb.org/t/p/w185/dm06L9pxDOL9jNSK4Cb6y139rmm.jpg" },
+        { name: "Emily Blunt", character: "Kitty Oppenheimer", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EE%3C/text%3E%3C/svg%3E" },
+        { name: "Matt Damon", character: "Leslie Groves", photo: "https://image.tmdb.org/t/p/w185/elSlNgV8xVifsbHpFsqrPGxJToZ.jpg" },
+        { name: "Robert Downey Jr.", character: "Lewis Strauss", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3ER%3C/text%3E%3C/svg%3E" },
+        { name: "Florence Pugh", character: "Jean Tatlock", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EF%3C/text%3E%3C/svg%3E" }
       ],
-      watch: [
-        { label: "Peacock", note: "Streaming (availability varies)" },
-        {
-          label: "TMDB",
-          href: "https://www.themoviedb.org/movie/872585-oppenheimer"
-        }
-      ]
+      watch: {
+        paid: [
+          { id: "peacock", label: "Peacock", note: "Streaming (availability varies)", href: "https://www.peacocktv.com/" },
+          { id: "amazon-prime", label: "Prime Video", note: "Rent or buy", href: "https://www.amazon.com/gp/video/storefront" },
+          { id: "apple", label: "Apple TV", note: "Rent or buy", href: "https://tv.apple.com/" }
+        ],
+        free: [
+          { id: "tubi", label: "Tubi", note: "Check region", href: "https://tubitv.com/" },
+          { id: "pluto", label: "Pluto TV", note: "Availability varies", href: "https://pluto.tv/" }
+        ],
+        other: [
+          { id: "tmdb", label: "TMDB", href: "https://www.themoviedb.org/movie/872585-oppenheimer" }
+        ]
+      }
     },
 
     "dune-part-two": {
@@ -140,24 +168,35 @@
         "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
       poster: IMG + "/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
       backdrop: IMG + "/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
+      trailerYouTubeId: "Way9Dexny3w",
       director: "Denis Villeneuve",
       writers: ["Denis Villeneuve", "Jon Spaihts"],
       producers: ["Mary Parent", "Cale Boyter", "Denis Villeneuve"],
       executiveProducer: "",
+      related: ["interstellar", "oppenheimer", "the-odyssey"],
       cast: [
-        { name: "Timothée Chalamet", character: "Paul Atreides" },
-        { name: "Zendaya", character: "Chani" },
-        { name: "Rebecca Ferguson", character: "Lady Jessica" },
-        { name: "Austin Butler", character: "Feyd-Rautha" },
-        { name: "Javier Bardem", character: "Stilgar" }
+        { name: "Timoth\u00e9e Chalamet", character: "Paul Atreides", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3ET%3C/text%3E%3C/svg%3E" },
+        { name: "Zendaya", character: "Chani", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EZ%3C/text%3E%3C/svg%3E" },
+        { name: "Rebecca Ferguson", character: "Lady Jessica", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3ER%3C/text%3E%3C/svg%3E" },
+        { name: "Austin Butler", character: "Feyd-Rautha", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EA%3C/text%3E%3C/svg%3E" },
+        { name: "Javier Bardem", character: "Stilgar", photo: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22185%22%20height%3D%22185%22%3E%3Crect%20fill%3D%22%232a3344%22%20width%3D%22100%25%22%20height%3D%22100%25%22/%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2254%25%22%20fill%3D%22%23e8b86d%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2272%22%20font-weight%3D%22700%22%3EJ%3C/text%3E%3C/svg%3E" }
       ],
-      watch: [
-        { label: "Max", note: "Streaming (availability varies)" },
-        {
-          label: "TMDB",
-          href: "https://www.themoviedb.org/movie/693134-dune-part-two"
-        }
-      ]
+      watch: {
+        paid: [
+          { id: "max", label: "Max", note: "Streaming (availability varies)", href: "https://www.max.com/" },
+          { id: "netflix", label: "Netflix", note: "Availability varies", href: "https://www.netflix.com/" },
+          { id: "amazon-prime", label: "Prime Video", note: "Rent or buy", href: "https://www.amazon.com/gp/video/storefront" },
+          { id: "hulu", label: "Hulu", note: "Availability varies", href: "https://www.hulu.com/" }
+        ],
+        free: [
+          { id: "tubi", label: "Tubi", note: "Check region", href: "https://tubitv.com/" },
+          { id: "pluto", label: "Pluto TV", note: "Availability varies", href: "https://pluto.tv/" },
+          { id: "plex", label: "Plex", note: "Availability varies", href: "https://www.plex.tv/" }
+        ],
+        other: [
+          { id: "tmdb", label: "TMDB", href: "https://www.themoviedb.org/movie/693134-dune-part-two" }
+        ]
+      }
     }
   };
 
@@ -274,12 +313,20 @@
       backdrop: details.backdrop_path
         ? TMDB_IMG_BASE + "/original" + details.backdrop_path
         : base.backdrop,
+      trailerYouTubeId: base.trailerYouTubeId,
       director: director,
       writers: writers.length ? writers : base.writers,
       producers: producers.length ? producers : base.producers,
       executiveProducer: exec || base.executiveProducer,
+      related: base.related,
       cast: (credits.cast || []).slice(0, 16).map(function (c) {
-        return { name: c.name, character: c.character };
+        return {
+          name: c.name,
+          character: c.character,
+          photo: c.profile_path
+            ? TMDB_IMG_BASE + "/w185" + c.profile_path
+            : (base.cast.find(function (b) { return b.name === c.name; }) || {}).photo
+        };
       }),
       watch: base.watch
     };
@@ -287,7 +334,7 @@
 
   global.ReelIndex = {
     SITE_NAME: "ReelIndex",
-    SITE_BASE: "https://example.com",
+    SITE_BASE: "https://atulitllc.github.io/movie-info-site",
     FALLBACK: FALLBACK,
     MOVIES: FALLBACK,
     TMDB_IMG_BASE: TMDB_IMG_BASE,
