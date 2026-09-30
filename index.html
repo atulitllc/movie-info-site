@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ReelIndex — Discover movies, cast & where to watch</title>
+  <meta name="description" content="ReelIndex is a fast, SEO-friendly movie info site with cast, crew, storylines, and where-to-watch guides. Start with The Odyssey (2026) and more." />
+  <link rel="canonical" href="https://atulitllc.github.io/movie-info-site/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ReelIndex — Discover movies" />
+  <meta property="og:description" content="Clean movie pages with cast, director, storyline, and where to watch." />
+  <meta property="og:url" content="https://atulitllc.github.io/movie-info-site/" />
+  <meta property="og:image" content="https://dx35vtwkllhj9.cloudfront.net/universalstudios/the-odyssey/images/regions/us/updates3/onesheet.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ReelIndex — Discover movies" />
+  <meta name="twitter:description" content="Clean movie pages with cast, director, storyline, and where to watch." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebSite","name":"ReelIndex","url":"https://atulitllc.github.io/movie-info-site/","potentialAction":{"@type":"SearchAction","target":"https://atulitllc.github.io/movie-info-site/?q={search_term_string}","query-input":"required name=search_term_string"}}
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="logo" href="./"><span class="logo-mark" aria-hidden="true"></span>ReelIndex</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="./">Home</a>
+        <a href="movies/the-odyssey/">The Odyssey</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="hero-home">
+      <div class="container">
+        <h1>Movie info that looks as good as it ranks.</h1>
+        <p>SEO-first pages for cast, crew, storyline, and where to watch — starting with Christopher Nolan’s <em>The Odyssey</em>.</p>
+        <a class="btn btn-primary" href="movies/the-odyssey/">Open The Odyssey</a>
+      </div>
+    </section>
+    <div class="container">
+      <div class="toolbar">
+        <label class="visually-hidden" for="search">Search movies</label>
+        <input id="search" type="search" placeholder="Search titles, years, genres…" />
+      </div>
+      <div id="movie-grid" class="grid" aria-live="polite"></div>
+      <details class="api-panel">
+        <summary>TMDB live refresh (optional API key)</summary>
+        <p>Embedded fallback data works offline. Paste a free TMDB v3 key to refresh Odyssey (id 1368337) for this browser session.</p>
+        <input id="apiKey" type="password" placeholder="TMDB API key" autocomplete="off" />
+        <button class="btn" id="loadBtn" type="button">Refresh Odyssey</button>
+        <span id="status"></span>
+      </details>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="container"><span>© ReelIndex · ATULIT LLC prototype</span><span>Not affiliated with TMDB or Universal</span></div></footer>
+  <script src="js/data.js"></script>
+  <script src="js/tmdb.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://atulitllc.github.io/movie-info-site/sitemap.xml
