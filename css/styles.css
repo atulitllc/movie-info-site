@@ -52,13 +52,14 @@ a.btn-primary{color:#1a1205}
 
 /* Home hero */
 .hero-home{padding:1.25rem 0 1.1rem;position:relative;overflow:hidden}
-.hero-home::before{content:"";position:absolute;inset:-30% -10% auto;height:340px;background:radial-gradient(circle at 30% 40%,rgba(232,184,109,.18),transparent 55%),radial-gradient(circle at 80% 20%,rgba(126,182,255,.12),transparent 45%);pointer-events:none}
-.hero-home-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:1.35rem 1.75rem;align-items:center;position:relative;z-index:1}
+.hero-home::before{content:"";position:absolute;inset:-30% -10% auto;height:380px;background:radial-gradient(circle at 30% 40%,rgba(232,184,109,.18),transparent 55%),radial-gradient(circle at 80% 20%,rgba(126,182,255,.12),transparent 45%);pointer-events:none}
+.hero-home-grid{display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1.45fr);gap:1.2rem .85rem;align-items:stretch;position:relative;z-index:1}
+.hero-copy{display:flex;flex-direction:column;justify-content:center;min-width:0}
 .hero-copy h1,.hero-home h1{font-size:clamp(1.55rem,3.2vw,2.15rem);line-height:1.12;margin:0 0 .45rem;letter-spacing:-.03em;max-width:18ch;position:relative}
 .hero-copy p,.hero-home p{color:var(--muted);max-width:42ch;margin:0 0 .75rem;font-size:.95rem;line-height:1.45;position:relative}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.15rem}
 .hero-actions .btn{padding:.5rem .9rem;font-size:.88rem}
-.hero-banner{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--panel2);box-shadow:var(--shadow);min-height:260px;height:clamp(260px,34vh,320px)}
+.hero-banner{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--panel2);box-shadow:var(--shadow);min-height:280px;align-self:stretch}
 .hero-banner-track{position:absolute;inset:0}
 .hero-slide{position:absolute;inset:0;display:flex;align-items:flex-end;gap:1rem;padding:1.15rem 1.2rem 2.65rem;text-decoration:none;color:#f4f6fb;opacity:0;pointer-events:none;transition:opacity .45s ease;background:center/cover no-repeat var(--slide-bg,#1a1f2b)}
 .hero-slide.is-active{opacity:1;pointer-events:auto;z-index:1}
