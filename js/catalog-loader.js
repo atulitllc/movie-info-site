@@ -1,10 +1,21 @@
 /**
  * Loads data/catalog.json and merges it into window.ReelIndex.
- * Curated records already on MOVIES / SERIES win (same slug is left alone).
+ * Curated records already on MOVIES / SERIES keep their own artwork.
+ * Empty poster/backdrop values are filled from the IMDb id with static
+ * MetaHub image URLs (no API key, no live TMDB refresh).
  * Relative paths keep GitHub Pages project sites and Cloudflare Pages working.
  */
 (function (global) {
   var R = global.ReelIndex || (global.ReelIndex = {});
+  var METAHUB = "https://images.metahub.space";
+
+  function fillArtwork(item) {
+    if (!item || !item.imdbId) return;
+    var id = String(item.imdbId);
+    if (id.indexOf("tt") !== 0) return;
+    if (!item.poster) item.poster = METAHUB + "/poster/medium/" + id + "/img";
+    if (!item.backdrop) item.backdrop = METAHUB + "/background/medium/" + id + "/img";
+  }
 
   function prefixFromScript() {
     var scripts = document.getElementsByTagName("script");
@@ -19,7 +30,15 @@
   function merge(list, bucket) {
     var map = R[bucket] || (R[bucket] = {});
     (list || []).forEach(function (item) {
-      if (!item || !item.slug || map[item.slug]) return;
+      if (!item || !item.slug) return;
+      fillArtwork(item);
+      var existing = map[item.slug];
+      if (existing) {
+        fillArtwork(existing);
+        if (!existing.poster && item.poster) existing.poster = item.poster;
+        if (!existing.backdrop && item.backdrop) existing.backdrop = item.backdrop;
+        return;
+      }
       map[item.slug] = item;
     });
   }
