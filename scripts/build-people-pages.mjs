@@ -1,7 +1,14 @@
 /**
- * Create /people/<slug>/ shells for everyone credited in curated data and data/catalog.json.
- * Existing curated pages are kept; this only adds series-data.js and the filmography heading.
- * Filmography itself is filled at runtime by js/person.js — do not hardcode TMDB person ids.
+ * Cap static /people/<slug>/ shells so Cloudflare Pages stays under the 20k-file limit.
+ *
+ * Strategy:
+ *   - Rank catalog people by credit count (cast+crew titles across movies+series).
+ *   - Always keep curated bios from js/people-data.js.
+ *   - Emit at most SHELL_CAP per-slug shells (~17k) for the highest-credit set.
+ *   - Shared shell at /people/_profile/ + root `_redirects` 200-rewrite for anyone
+ *     without a static shell (static assets win over 200 rewrites on CF Pages).
+ *   - /people/index.html lists the kept shells (SEO + discovery).
+ *   - sitemap.xml lists only kept people URLs (+ /people/).
  *
  *   node scripts/build-people-pages.mjs
  */
@@ -12,7 +19,83 @@ import { fileURLToPath } from "url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const peopleDir = path.join(root, "people");
+const profileDir = path.join(peopleDir, "_profile");
+const profileFile = path.join(profileDir, "index.html");
+const indexFile = path.join(peopleDir, "index.html");
 const siteBase = "https://wheretowatchfree.com";
+
+/** Max per-slug shells (excludes people/index.html and people/_profile/). */
+const SHELL_CAP = 17000;
+
+const PROFILE_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Person — Movies &amp; Series | WhereToWatchFree</title>
+  <meta name="description" content="Filmography and credits in the WhereToWatchFree catalog." />
+  <link rel="canonical" href="${siteBase}/people/" />
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content="Person | WhereToWatchFree" />
+  <meta property="og:description" content="Filmography and credits in the WhereToWatchFree catalog." />
+  <meta property="og:url" content="${siteBase}/people/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Person | WhereToWatchFree" />
+  <meta name="twitter:description" content="Filmography and credits in the WhereToWatchFree catalog." />
+  <script src="../../js/theme-boot.js"></script>
+  <link rel="stylesheet" href="../../css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="logo" href="../../" aria-label="WhereToWatchFree"><img class="logo-lockup logo-lockup--dark" src="../../assets/brand/lockup-horizontal-dark.svg" alt="WhereToWatchFree" width="155" height="36" decoding="async" /><img class="logo-lockup logo-lockup--light" src="../../assets/brand/lockup-horizontal-light.svg" alt="" width="155" height="36" decoding="async" /></a>
+      <div class="nav-right">
+                <nav class="nav-links" aria-label="Primary">
+          <a href="../../">Home</a>
+          <a href="../../whats-on/">What&rsquo;s On</a>
+          <a href="../../trending/">Trending</a>
+          <a href="../../series/">Series</a>
+          <a href="../../watch-free/">Watch free</a>
+        </nav>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <header class="person-hero">
+    <div class="container person-grid">
+      <img class="person-photo" id="person-photo" alt="" width="400" height="600" />
+      <div>
+        <h1 id="person-name">Person</h1>
+        <div class="person-facts">
+          <span><strong>Born</strong> <span id="person-birthday">—</span></span>
+          <span><strong>Place</strong> <span id="person-place">—</span></span>
+        </div>
+        <p class="person-bio" id="person-bio"></p>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <article>
+      <section class="section">
+        <h2>Movies &amp; series</h2>
+        <div class="person-known-grid" id="person-known-for"></div>
+      </section>
+    </article>
+  </main>
+  <footer class="site-footer"></footer>
+  <script src="../../js/data.js"></script>
+  <script src="../../js/series-data.js"></script>
+  <script src="../../js/catalog-loader.js"></script>
+  <script src="../../js/people-data.js"></script>
+  <script src="../../js/theme.js"></script>
+  <script src="../../js/footer.js"></script>
+  <script src="../../js/person.js"></script>
+</body>
+</html>
+`;
 
 function mergeBulkCatalog(R) {
   const catalogPath = path.join(root, "data", "catalog.json");
@@ -20,7 +103,6 @@ function mergeBulkCatalog(R) {
   const data = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
   R.MOVIES = R.MOVIES || {};
   R.SERIES = R.SERIES || {};
-  // Curated records already on MOVIES/SERIES win (same rule as catalog-loader.js).
   for (const item of data.movies || []) {
     if (item && item.slug && !R.MOVIES[item.slug]) R.MOVIES[item.slug] = item;
   }
@@ -151,74 +233,250 @@ function pageHtml(person) {
 `;
 }
 
-function patchExisting(html) {
-  let next = html;
-  if (!next.includes("js/series-data.js")) {
-    next = next.replace(
-      '<script src="../../js/data.js"></script>\n  <script src="../../js/people-data.js"></script>',
-      '<script src="../../js/data.js"></script>\n  <script src="../../js/series-data.js"></script>\n  <script src="../../js/people-data.js"></script>'
-    );
+function selectPeople(reel) {
+  const curatedSlugs = new Set(Object.keys(reel.PEOPLE || {}));
+  const all = reel.listCatalogPeople().filter(function (p) {
+    return p && p.slug && /^[a-z0-9-]+$/.test(p.slug);
+  });
+  const ranked = all
+    .map(function (p) {
+      return {
+        person: p,
+        credits: (p.credits && p.credits.length) || 0,
+        curated: curatedSlugs.has(p.slug)
+      };
+    })
+    .sort(function (a, b) {
+      if (a.curated !== b.curated) return a.curated ? -1 : 1;
+      if (b.credits !== a.credits) return b.credits - a.credits;
+      return String(a.person.slug).localeCompare(String(b.person.slug));
+    });
+
+  const kept = [];
+  const seen = new Set();
+  // Curated first (always), then fill by credit rank up to SHELL_CAP.
+  for (const row of ranked) {
+    if (kept.length >= SHELL_CAP) break;
+    if (seen.has(row.person.slug)) continue;
+    seen.add(row.person.slug);
+    kept.push(row);
   }
-  if (!next.includes("js/catalog-loader.js")) {
-    next = next.replace(
-      '<script src="../../js/series-data.js"></script>\n  <script src="../../js/people-data.js"></script>',
-      '<script src="../../js/series-data.js"></script>\n  <script src="../../js/catalog-loader.js"></script>\n  <script src="../../js/people-data.js"></script>'
-    );
-    if (!next.includes("js/catalog-loader.js")) {
-      next = next.replace(
-        '<script src="../../js/data.js"></script>\n  <script src="../../js/people-data.js"></script>',
-        '<script src="../../js/data.js"></script>\n  <script src="../../js/catalog-loader.js"></script>\n  <script src="../../js/people-data.js"></script>'
-      );
+  // If curated somehow exceeded cap (shouldn't), still force them in by replacing lowest.
+  for (const slug of curatedSlugs) {
+    if (seen.has(slug)) continue;
+    const person = reel.getPerson(slug);
+    if (!person || !/^[a-z0-9-]+$/.test(slug)) continue;
+    if (kept.length < SHELL_CAP) {
+      kept.push({ person, credits: (person.credits || []).length, curated: true });
+      seen.add(slug);
+      continue;
+    }
+    // Replace the last (lowest priority) non-curated entry.
+    for (let i = kept.length - 1; i >= 0; i--) {
+      if (!kept[i].curated) {
+        seen.delete(kept[i].person.slug);
+        kept[i] = { person, credits: (person.credits || []).length, curated: true };
+        seen.add(slug);
+        break;
+      }
     }
   }
-  next = next.replace("<h2>Known for</h2>", "<h2>Movies &amp; series</h2>");
-  return next;
+  kept.sort(function (a, b) {
+    return String(a.person.name || a.person.slug).localeCompare(
+      String(b.person.name || b.person.slug)
+    );
+  });
+  return { kept, total: all.length, curatedCount: curatedSlugs.size };
 }
 
-function updateSitemap(slugs) {
+function ensureProfileShell() {
+  fs.mkdirSync(profileDir, { recursive: true });
+  fs.writeFileSync(profileFile, PROFILE_HTML);
+}
+
+function writePeopleIndex(keptRows) {
+  const links = keptRows
+    .map(function (row) {
+      const p = row.person;
+      const name = p.name || p.slug;
+      return (
+        '        <li><a href="./' +
+        esc(p.slug) +
+        '/">' +
+        esc(name) +
+        "</a></li>"
+      );
+    })
+    .join("\n");
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>People — Cast &amp; Crew | WhereToWatchFree</title>
+  <meta name="description" content="Browse cast and crew pages in the WhereToWatchFree catalog." />
+  <link rel="canonical" href="${siteBase}/people/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="People | WhereToWatchFree" />
+  <meta property="og:description" content="Browse cast and crew pages in the WhereToWatchFree catalog." />
+  <meta property="og:url" content="${siteBase}/people/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="People | WhereToWatchFree" />
+  <meta name="twitter:description" content="Browse cast and crew pages in the WhereToWatchFree catalog." />
+  <script src="../js/theme-boot.js"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="logo" href="../" aria-label="WhereToWatchFree"><img class="logo-lockup logo-lockup--dark" src="../assets/brand/lockup-horizontal-dark.svg" alt="WhereToWatchFree" width="155" height="36" decoding="async" /><img class="logo-lockup logo-lockup--light" src="../assets/brand/lockup-horizontal-light.svg" alt="" width="155" height="36" decoding="async" /></a>
+      <div class="nav-right">
+                <nav class="nav-links" aria-label="Primary">
+          <a href="../">Home</a>
+          <a href="../whats-on/">What&rsquo;s On</a>
+          <a href="../trending/">Trending</a>
+          <a href="../series/">Series</a>
+          <a href="../watch-free/">Watch free</a>
+        </nav>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <article>
+      <header class="section" style="padding-bottom:0">
+        <h1>People</h1>
+        <p class="muted">${keptRows.length.toLocaleString("en-US")} cast and crew pages with filmography from the catalog. Cast links on title pages stay clickable; anyone without a dedicated shell uses the shared profile fallback.</p>
+      </header>
+      <section class="section">
+        <ul class="people-index-list" style="columns:2;gap:2rem;list-style:disc;padding-left:1.25rem">
+${links}
+        </ul>
+      </section>
+    </article>
+  </main>
+  <footer class="site-footer"></footer>
+  <script src="../js/theme.js"></script>
+  <script src="../js/footer.js"></script>
+</body>
+</html>
+`;
+  fs.writeFileSync(indexFile, html);
+}
+
+function syncShells(keptRows) {
+  const keep = new Set(keptRows.map(function (r) {
+    return r.person.slug;
+  }));
+  keep.add("_profile");
+
+  let created = 0;
+  let updated = 0;
+  let removed = 0;
+
+  fs.mkdirSync(peopleDir, { recursive: true });
+
+  // Remove excess per-slug dirs (and stray files except index.html / _profile).
+  if (fs.existsSync(peopleDir)) {
+    for (const name of fs.readdirSync(peopleDir)) {
+      if (name === "index.html") continue;
+      if (name === "_profile") continue;
+      const full = path.join(peopleDir, name);
+      const stat = fs.lstatSync(full);
+      if (stat.isDirectory()) {
+        if (!keep.has(name)) {
+          fs.rmSync(full, { recursive: true, force: true });
+          removed++;
+        }
+      } else {
+        fs.rmSync(full, { force: true });
+        removed++;
+      }
+    }
+  }
+
+  for (const row of keptRows) {
+    const slug = row.person.slug;
+    const dir = path.join(peopleDir, slug);
+    const file = path.join(dir, "index.html");
+    const html = pageHtml(row.person);
+    const existed = fs.existsSync(file);
+    fs.mkdirSync(dir, { recursive: true });
+    if (existed) {
+      const prev = fs.readFileSync(file, "utf8");
+      if (prev !== html) {
+        fs.writeFileSync(file, html);
+        updated++;
+      }
+    } else {
+      fs.writeFileSync(file, html);
+      created++;
+    }
+  }
+
+  return { created, updated, removed };
+}
+
+function updateSitemap(keptSlugs) {
   const sitemapPath = path.join(root, "sitemap.xml");
   let xml = fs.readFileSync(sitemapPath, "utf8");
   xml = xml.replace(/\s*<url><loc>https:\/\/atulitllc\.github\.io\/movie-info-site\/people\/[^<]+<\/loc><\/url>/g, "");
-  const block =
-    slugs
+  xml = xml.replace(/\s*<url><loc>https:\/\/wheretowatchfree\.com\/people\/[^<]*<\/loc><\/url>/g, "");
+  const urls = [siteBase + "/people/"].concat(
+    keptSlugs
       .slice()
       .sort()
-      .map(function (slug) {
-        return "  <url><loc>" + siteBase + "/people/" + slug + "/</loc></url>";
+      .filter(function (slug) {
+        return slug && slug !== "_profile" && /^[a-z0-9-]+$/.test(slug);
       })
-      .join("\n") + "\n";
+      .map(function (slug) {
+        return siteBase + "/people/" + slug + "/";
+      })
+  );
+  const block = urls.map(function (loc) {
+    return "  <url><loc>" + loc + "</loc></url>";
+  }).join("\n") + "\n";
   xml = xml.replace("</urlset>", block + "</urlset>\n");
   fs.writeFileSync(sitemapPath, xml);
+  return urls.length;
 }
 
 const reel = loadCatalog();
-const people = reel.listCatalogPeople();
-let created = 0;
-let patched = 0;
-const slugs = [];
+const { kept, total, curatedCount } = selectPeople(reel);
+ensureProfileShell();
+const sync = syncShells(kept);
+writePeopleIndex(kept);
+const sitemapCount = updateSitemap(kept.map(function (r) {
+  return r.person.slug;
+}));
 
-for (const person of people) {
-  const slug = person.slug;
-  if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
-    console.warn("skip invalid slug", slug, person.name);
-    continue;
-  }
-  slugs.push(slug);
-  const dir = path.join(peopleDir, slug);
-  const file = path.join(dir, "index.html");
-  if (fs.existsSync(file)) {
-    const prev = fs.readFileSync(file, "utf8");
-    const next = patchExisting(prev);
-    if (next !== prev) {
-      fs.writeFileSync(file, next);
-      patched++;
-    }
-    continue;
-  }
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(file, pageHtml(person));
-  created++;
-}
+const minCredits = kept.reduce(function (m, r) {
+  return Math.min(m, r.credits);
+}, Infinity);
+const curatedKept = kept.filter(function (r) {
+  return r.curated;
+}).length;
 
-updateSitemap(slugs);
-console.log("people", people.length, "created", created, "patched", patched);
+console.log(
+  JSON.stringify(
+    {
+      catalog_people: total,
+      shell_cap: SHELL_CAP,
+      shells_kept: kept.length,
+      curated_kept: curatedKept,
+      curated_total: curatedCount,
+      min_credits_among_kept: minCredits,
+      created: sync.created,
+      updated: sync.updated,
+      removed_dirs: sync.removed,
+      sitemap_people_urls: sitemapCount,
+      profile: profileFile,
+      index: indexFile
+    },
+    null,
+    2
+  )
+);

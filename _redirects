@@ -1,0 +1,5 @@
+# Fallback for /people/{slug}/ when no static shell exists.
+# Existing people/<slug>/index.html assets win over these 200 rewrites on CF Pages.
+# person.js reads the slug from the browser URL path.
+/people/:slug/  /people/_profile/index.html  200
+/people/:slug   /people/_profile/index.html  200

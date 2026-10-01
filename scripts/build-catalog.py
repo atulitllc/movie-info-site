@@ -451,13 +451,16 @@ def write_sitemap():
         f"{SITE}/series/",
         f"{SITE}/watch-free/",
         f"{SITE}/about/",
+        f"{SITE}/people/",
     ]
-    for kind in ("movies", "series", "people"):
+    for kind in ("movies", "series"):
         base = ROOT / kind
         if not base.exists():
             continue
         for child in sorted(p for p in base.iterdir() if (p / "index.html").exists()):
             locs.append(f"{SITE}/{kind}/{child.name}/")
+    # People URLs are listed by scripts/build-people-pages.mjs (shared profile shell;
+    # no per-slug files under people/ except _profile/).
     body = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
             "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"]
     body.extend(f"  <url><loc>{loc}</loc></url>" for loc in locs)
