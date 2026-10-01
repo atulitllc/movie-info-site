@@ -14,7 +14,7 @@ SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail page
 - Full-bleed cinematic detail heroes (poster overlay, score ring, horizontal cast scroller)
 - Light/dark mode toggle (persisted as `theme=light|dark` in `localStorage`; default dark)
 - Person pages linked from cast/crew
-- Static directory in `data/catalog.json` (IMDb public title/ratings dump; no client TMDB API key). Bulk posters and backdrops are static `images.metahub.space` URLs keyed by IMDb id (`scripts/build-catalog.py --backfill-posters`)
+- Static directory in `data/catalog.json`. Bulk posters and backdrops stay on static `images.metahub.space` URLs keyed by IMDb id (`scripts/build-catalog.py --backfill-posters`). Cast, directors, producers, and US where-to-watch providers are filled from TMDB with `TMDB_API_KEY=… python scripts/build-catalog.py`. Curated titles in `js/data.js` and `js/series-data.js` are not rewritten.
 - Brand pack in `assets/brand/` (Clapperboard mark, condensed lockups, favicons)
 
 ## Structure
@@ -37,3 +37,23 @@ Open `index.html` or serve the folder:
 ```bash
 python3 -m http.server 8080
 ```
+
+## Refresh bulk cast, crew, and where to watch
+
+Curated titles in `js/data.js` and `js/series-data.js` already have crew and providers. Leave them alone. The bulk rows in `data/catalog.json`, and the generated `movies/<slug>/` and `series/<slug>/` pages that embed `#title-json`, start without cast, director, or streaming providers.
+
+The TMDB key stays in the environment for one run. Do not commit it.
+
+```bash
+TMDB_API_KEY=… python scripts/build-catalog.py
+```
+
+A v4 read token works the same way:
+
+```bash
+TMDB_READ_ACCESS_TOKEN=… python scripts/build-catalog.py
+```
+
+For each bulk title with an `imdbId` the script calls TMDB find by IMDb id, then movie or TV details with credits and US watch providers (`TMDB_WATCH_REGION` overrides the region, default `US`). It keeps a poster or backdrop that is already set and fills only empty artwork from TMDB. It prints per-title lines plus a JSON summary of fill counts, `not_found`, `failed`, and `retries_429`. `still_empty` in that summary is the whole catalog, including titles skipped by `--limit`. Requests stay near 3 per second and retry HTTP 429. An interrupted run resumes from `data/.tmdb-backfill-cache.json` (gitignored). Pass `--refresh` to ignore that cache, or `--limit 20` to process the first 20 bulk titles.
+
+`--backfill-posters` still fills MetaHub artwork with no API key. `--from-imdb` rebuilds the title list from local IMDb dataset dumps and does not call TMDB. Neither path is the crew backfill.

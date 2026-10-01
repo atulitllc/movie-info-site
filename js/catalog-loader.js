@@ -1,8 +1,10 @@
 /**
  * Loads data/catalog.json and merges it into window.ReelIndex.
- * Curated records already on MOVIES / SERIES keep their own artwork.
+ * Curated records already on MOVIES / SERIES stay as authored
+ * (crew, cast, watch, overview). Only an empty poster or backdrop
+ * is filled from the bulk catalog.
  * Empty poster/backdrop values are filled from the IMDb id with static
- * MetaHub image URLs (no API key, no live TMDB refresh).
+ * MetaHub image URLs (no API key in the browser).
  * Relative paths keep GitHub Pages project sites and Cloudflare Pages working.
  */
 (function (global) {
