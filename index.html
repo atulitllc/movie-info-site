@@ -39,12 +39,22 @@
   </header>
   <main>
     <section class="hero-home">
-      <div class="container">
-        <h1>Browse movies. Find where to watch online — including free.</h1>
-        <p>SEO-friendly pages for cast, crew, storyline, trailers, and legal streaming guides. Check free-with-ads options on Tubi, Pluto TV, Plex, and similar platforms, or jump into Christopher Nolan’s <em>The Odyssey</em>.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="watch-free/">Watch free (legal)</a>
-          <a class="btn" href="movies/the-odyssey/">Open The Odyssey</a>
+      <div class="container hero-home-grid">
+        <div class="hero-copy">
+          <h1>Browse movies. Find where to watch online — including free.</h1>
+          <p>Cast, trailers, and legal streaming guides — including free-with-ads options on Tubi, Pluto TV, Plex, and more.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="watch-free/">Watch free (legal)</a>
+            <a class="btn" href="movies/the-odyssey/">Open The Odyssey</a>
+          </div>
+        </div>
+        <div class="hero-banner" id="hero-banner" aria-roledescription="carousel" aria-label="Latest movies">
+          <div class="hero-banner-track" id="hero-banner-track"></div>
+          <div class="hero-banner-controls">
+            <button type="button" class="hero-banner-btn" id="hero-banner-prev" aria-label="Previous featured movie">‹</button>
+            <div class="hero-banner-dots" id="hero-banner-dots"></div>
+            <button type="button" class="hero-banner-btn" id="hero-banner-next" aria-label="Next featured movie">›</button>
+          </div>
         </div>
       </div>
     </section>
