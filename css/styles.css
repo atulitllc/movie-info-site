@@ -259,7 +259,11 @@ img.glance-cast-dot{display:block}
 
 /* Type badges + horizontal rails (series / what's on) */
 .card{position:relative}
-.type-badge{position:absolute;top:.55rem;left:.55rem;z-index:2;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.22rem .45rem;border-radius:999px;background:rgba(10,14,23,.78);color:var(--accent);border:1px solid rgba(232,184,109,.35);backdrop-filter:blur(6px)}
+.type-badge{position:absolute;top:.5rem;left:.5rem;z-index:2;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:.32rem .58rem;border-radius:999px;background:rgba(10,14,23,.88);color:var(--accent);border:1px solid rgba(232,184,109,.45);backdrop-filter:blur(8px);box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.1;max-width:calc(100% - 1rem);white-space:nowrap}
+.type-badge--movie{color:#f0d9a8;border-color:rgba(232,184,109,.5);background:rgba(18,22,34,.9)}
+.type-badge--series{color:#9ec5ff;border-color:rgba(120,170,255,.5);background:rgba(14,22,40,.92)}
+.type-badge--theater{color:#fff;border-color:rgba(255,90,90,.55);background:linear-gradient(135deg,rgba(180,28,48,.95),rgba(120,16,36,.95));box-shadow:0 4px 16px rgba(180,28,48,.35)}
+.rail .type-badge,.grid .type-badge{font-size:.7rem;padding:.3rem .52rem}
 .rail-section{margin:0 0 1.75rem}
 .rail-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin:0 0 .75rem}
 .rail-head .home-section-title{margin:0}

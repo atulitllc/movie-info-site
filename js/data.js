@@ -354,6 +354,12 @@
     "watch": {
       "paid": [
         {
+          "id": "theaters",
+          "label": "In Theaters",
+          "note": "Select IMAX / event screenings · check local listings",
+          "href": "https://www.fandango.com/"
+        },
+        {
           "id": "peacock",
           "label": "Peacock",
           "note": "Streaming (availability varies)",
@@ -474,6 +480,12 @@
     ],
     "watch": {
       "paid": [
+        {
+          "id": "theaters",
+          "label": "In Theaters",
+          "note": "Special / IMAX engagements · check local listings",
+          "href": "https://www.fandango.com/"
+        },
         {
           "id": "max",
           "label": "Max",
@@ -1774,6 +1786,12 @@
     ],
     "watch": {
       "paid": [
+        {
+          "id": "theaters",
+          "label": "In Theaters",
+          "note": "Special / large-format engagements · check local listings",
+          "href": "https://www.fandango.com/"
+        },
         {
           "id": "disney-plus",
           "label": "Disney+",

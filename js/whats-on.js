@@ -52,13 +52,30 @@
   }
 
   function card(item) {
-    var badge = item._kind === "series" ? (item.kind === "web-series" ? "Web series" : "Series") : "Movie";
+    var badge = ReelIndex.typeBadge
+      ? ReelIndex.typeBadge(item)
+      : {
+          label:
+            item._label ||
+            (item._kind === "series"
+              ? item.kind === "web-series"
+                ? "Web series"
+                : "Series"
+              : item._kind === "theater"
+                ? "In theaters"
+                : "Movie"),
+          mod: item._badgeMod || item._kind || "movie"
+        };
     return (
       '<a class="card rail-card" href="' +
       item._href +
       '">' +
-      '<span class="type-badge">' +
-      badge +
+      '<span class="type-badge type-badge--' +
+      escapeHtml(badge.mod) +
+      '" aria-label="' +
+      escapeHtml(badge.label) +
+      '">' +
+      escapeHtml(badge.label) +
       "</span>" +
       '<img class="card-poster" src="' +
       escapeHtml(item.poster || FALLBACK_POSTER) +
