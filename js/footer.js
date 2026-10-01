@@ -67,7 +67,20 @@
     );
   }
 
+
+  function injectAnalyticsBeacon() {
+    if (document.querySelector('script[data-cf-beacon], script[src*="static.cloudflareinsights.com/beacon"]')) {
+      return;
+    }
+    var s = document.createElement("script");
+    s.defer = true;
+    s.src = "https://static.cloudflareinsights.com/beacon.min.js";
+    s.setAttribute("data-cf-beacon", '{"token": "de61c709c93f4eefad90a1a4feea9e71"}');
+    document.head.appendChild(s);
+  }
+
   function inject() {
+    injectAnalyticsBeacon();
     var prefix = rootPrefix();
     var existing = document.querySelector("footer.site-footer");
     var footer = existing || document.createElement("footer");
