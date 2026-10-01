@@ -1,5 +1,5 @@
 /**
- * ReelIndex movie catalog
+ * WhereToWatchFree movie catalog
  * Add movies here — keyed by URL slug. detail.js and home.js read this.
  */
 (function (global) {
@@ -2574,7 +2574,7 @@
   }
 
   global.ReelIndex = {
-    SITE_NAME: "ReelIndex",
+    SITE_NAME: "WhereToWatchFree",
     SITE_BASE: "https://atulitllc.github.io/movie-info-site",
     FALLBACK: FALLBACK,
     MOVIES: FALLBACK,
