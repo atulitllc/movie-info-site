@@ -14,7 +14,7 @@ SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail page
 - Full-bleed cinematic detail heroes (poster overlay, score ring, horizontal cast scroller)
 - Light/dark mode toggle (persisted as `theme=light|dark` in `localStorage`; default dark)
 - Person pages linked from cast/crew
-- Static directory in `data/catalog.json` (IMDb public title/ratings dump; no client TMDB API key)
+- Static directory in `data/catalog.json` (IMDb public title/ratings dump; no client TMDB API key). Bulk posters and backdrops are static `images.metahub.space` URLs keyed by IMDb id (`scripts/build-catalog.py --backfill-posters`)
 - Brand pack in `assets/brand/` (Clapperboard mark, condensed lockups, favicons)
 
 ## Structure

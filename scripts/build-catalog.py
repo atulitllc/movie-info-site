@@ -6,7 +6,10 @@ from https://datasets.imdbws.com/) and writes data/catalog.json plus
 movies/<slug>/ and series/<slug>/ shells for titles that do not already
 have a curated page.
 
-No TMDB API key. Release dates are year-precision (YYYY-01-01).
+No TMDB or OMDb API key. Release dates are year-precision (YYYY-01-01).
+Poster and backdrop URLs are static MetaHub images keyed by IMDb id:
+  https://images.metahub.space/poster/medium/{imdbId}/img
+  https://images.metahub.space/background/medium/{imdbId}/img
 """
 from __future__ import annotations
 
@@ -14,6 +17,7 @@ import gzip
 import html
 import json
 import re
+import sys
 import unicodedata
 from collections import defaultdict
 from pathlib import Path
@@ -21,10 +25,44 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 IMDB = Path("/tmp/imdb")
 SITE = "https://atulitllc.github.io/movie-info-site"
+METAHUB = "https://images.metahub.space"
+SOURCE = (
+    "IMDb public datasets title.basics and title.ratings. "
+    "Release dates are year-precision. No TMDB API key. "
+    "Poster and backdrop URLs are static MetaHub images keyed by IMDb id."
+)
+TITLE_JSON_RE = re.compile(
+    r'(<script type="application/json" id="title-json">)(.*?)(</script>)',
+    re.S,
+)
 
 MOVIE_TAKE = {2026: 400, 2025: 400, 2024: 350, 2023: 250, 2022: 180, 2021: 120, 2020: 100}
 SERIES_TAKE = {2026: 80, 2025: 80, 2024: 70, 2023: 60, 2022: 50, 2021: 40, 2020: 40, 2019: 40, 2018: 40}
 MIN_VOTES = 200
+
+
+def artwork_urls(imdb_id: str) -> tuple[str, str]:
+    """Static poster and backdrop URLs. Empty when there is no IMDb id."""
+    imdb_id = (imdb_id or "").strip()
+    if not imdb_id.startswith("tt"):
+        return "", ""
+    return (
+        f"{METAHUB}/poster/medium/{imdb_id}/img",
+        f"{METAHUB}/background/medium/{imdb_id}/img",
+    )
+
+
+def apply_artwork(rec: dict) -> tuple[bool, bool]:
+    """Fill empty poster/backdrop from imdbId. Returns (poster_filled, backdrop_filled)."""
+    poster, backdrop = artwork_urls(rec.get("imdbId") or "")
+    poster_filled = backdrop_filled = False
+    if poster and not rec.get("poster"):
+        rec["poster"] = poster
+        poster_filled = True
+    if backdrop and not rec.get("backdrop"):
+        rec["backdrop"] = backdrop
+        backdrop_filled = True
+    return poster_filled, backdrop_filled
 
 
 def slugify(title: str) -> str:
@@ -149,6 +187,7 @@ def assign_slugs(rows, media, reserved_years, used):
                 "note": "2026 release — check local listings",
                 "href": imdb,
             })
+        poster, backdrop = artwork_urls(row["imdbId"])
         rec = {
             "slug": slug,
             "mediaType": media,
@@ -157,8 +196,8 @@ def assign_slugs(rows, media, reserved_years, used):
             "voteAverage": row["voteAverage"],
             "genres": genres,
             "overview": overview,
-            "poster": "",
-            "backdrop": "",
+            "poster": poster,
+            "backdrop": backdrop,
             "imdbId": row["imdbId"],
             "inTheaters": in_theaters,
             "watch": watch,
@@ -323,6 +362,77 @@ def write_pages(records, by_slug):
     return written
 
 
+def refresh_generated_pages(by_slug: dict) -> dict:
+    """Patch embedded title JSON on generated pages. Curated pages have no title-json."""
+    updated = 0
+    unchanged = 0
+    curated = 0
+    for kind in ("movies", "series"):
+        base = ROOT / kind
+        if not base.exists():
+            continue
+        for index in base.glob("*/index.html"):
+            text = index.read_text(encoding="utf-8")
+            match = TITLE_JSON_RE.search(text)
+            if not match:
+                curated += 1
+                continue
+            rec = json.loads(match.group(2))
+            changed = False
+            if apply_artwork(rec) != (False, False):
+                changed = True
+            for rel in rec.get("relatedItems") or []:
+                other = by_slug.get(rel.get("slug") or "")
+                poster = (other or {}).get("poster") or ""
+                if poster and not rel.get("poster"):
+                    rel["poster"] = poster
+                    changed = True
+            if not changed:
+                unchanged += 1
+                continue
+            payload = json.dumps(rec, ensure_ascii=True, separators=(",", ":")).replace("<", "\\u003c")
+            index.write_text(
+                text[: match.start(2)] + payload + text[match.end(2) :],
+                encoding="utf-8",
+            )
+            updated += 1
+    return {"updated": updated, "unchanged": unchanged, "curated_skipped": curated}
+
+
+def backfill_committed_catalog() -> None:
+    """Fill artwork on data/catalog.json and generated pages. Does not re-read IMDb dumps."""
+    path = ROOT / "data" / "catalog.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    counts = {}
+    by_slug = {}
+    for bucket in ("movies", "series"):
+        filled_poster = filled_backdrop = still_poster = still_backdrop = 0
+        missing_imdb = 0
+        for rec in data.get(bucket) or []:
+            if not (rec.get("imdbId") or "").startswith("tt"):
+                missing_imdb += 1
+            poster_filled, backdrop_filled = apply_artwork(rec)
+            filled_poster += int(poster_filled)
+            filled_backdrop += int(backdrop_filled)
+            if not rec.get("poster"):
+                still_poster += 1
+            if not rec.get("backdrop"):
+                still_backdrop += 1
+            by_slug[rec["slug"]] = rec
+        counts[bucket] = {
+            "total": len(data.get(bucket) or []),
+            "posters_filled": filled_poster,
+            "backdrops_filled": filled_backdrop,
+            "posters_still_empty": still_poster,
+            "backdrops_still_empty": still_backdrop,
+            "missing_imdb": missing_imdb,
+        }
+    data["source"] = SOURCE
+    path.write_text(json.dumps(data, ensure_ascii=True, separators=(",", ":")), encoding="utf-8")
+    pages = refresh_generated_pages(by_slug)
+    print(json.dumps({"catalog": counts, "pages": pages}, indent=2))
+
+
 def write_sitemap():
     locs = [
         f"{SITE}/",
@@ -361,7 +471,7 @@ def main():
     by_slug = {r["slug"]: r for r in all_recs}
     out = {
         "generated": "2026-10-01",
-        "source": "IMDb public datasets title.basics and title.ratings. Release dates are year-precision. No TMDB API key.",
+        "source": SOURCE,
         "movies": movies,
         "series": series,
     }
@@ -372,8 +482,13 @@ def main():
     print("catalog", path, "movies", len(movies), "series", len(series), "bytes", path.stat().st_size)
     pages = write_pages(all_recs, by_slug)
     print("pages", pages)
+    refreshed = refresh_generated_pages(by_slug)
+    print("refreshed", refreshed)
     print("sitemap", write_sitemap())
 
 
 if __name__ == "__main__":
-    main()
+    if "--backfill-posters" in sys.argv:
+        backfill_committed_catalog()
+    else:
+        main()
