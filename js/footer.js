@@ -35,6 +35,7 @@
               '<li><a href="' + prefix + 'trending/">Trending</a></li>' +
               '<li><a href="' + prefix + 'series/">Series</a></li>' +
               '<li><a href="' + prefix + 'watch-free/">Watch free</a></li>' +
+              '<li><a href="' + prefix + 'people/">People</a></li>' +
               '<li><a href="' + prefix + '#movie-grid">Movies</a></li>' +
             "</ul>" +
           "</nav>" +

@@ -52,7 +52,7 @@
     if (token && personRecord(token)) return "../../people/" + token + "/";
     // Bulk #title-json pages only run title-boot.js — they never load people-data.js,
     // so getPerson is missing. Still link by slug so cast/crew stay clickable;
-    // /people/:slug/ is rewritten to the shared profile shell (see _redirects).
+    // top people have static shells; others fall back via _redirects → _profile.
     if (byName) return "../../people/" + byName + "/";
     if (token) return "../../people/" + token + "/";
     return "";

@@ -451,6 +451,7 @@ def write_sitemap():
         f"{SITE}/series/",
         f"{SITE}/watch-free/",
         f"{SITE}/about/",
+        f"{SITE}/people/",
     ]
     for kind in ("movies", "series"):
         base = ROOT / kind
