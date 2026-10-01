@@ -24,7 +24,7 @@
             '<img class="logo-lockup logo-lockup--light" src="' + prefix + 'assets/brand/lockup-horizontal-light.svg" alt="" width="155" height="36" decoding="async" />' +
           "</a>" +
           '<p class="footer-tagline">Browse movies &amp; series. Find where to watch online — legally, including free-with-ads.</p>' +
-          '<p class="footer-copy">&copy; ' + year + " WhereToWatchFree · ATULIT LLC</p>" +
+          '<p class="footer-copy">&copy; ' + year + " WhereToWatchFree</p>" +
         "</div>" +
         '<div class="footer-cols">' +
           '<nav class="footer-col" aria-label="Browse">' +

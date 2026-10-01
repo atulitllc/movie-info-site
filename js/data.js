@@ -2452,7 +2452,7 @@
 
   global.ReelIndex = {
     SITE_NAME: "WhereToWatchFree",
-    SITE_BASE: "https://atulitllc.github.io/movie-info-site",
+    SITE_BASE: "https://wheretowatchfree.com",
     FALLBACK: FALLBACK,
     MOVIES: FALLBACK,
     getMovies: getMovies,
