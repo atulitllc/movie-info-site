@@ -1,8 +1,14 @@
 (function () {
   const slug = document.body.dataset.slug;
   if (!slug || !window.ReelIndex) return;
-  const movie = ReelIndex.getMovie(slug);
+  const mediaType = document.body.dataset.media || "movie";
+  const isSeries = mediaType === "series" || mediaType === "tv";
+  const movie = isSeries
+    ? (ReelIndex.getSeries && ReelIndex.getSeries(slug))
+    : ReelIndex.getMovie(slug);
   if (!movie) return;
+  const mediaBase = isSeries ? "../../series/" : "../../movies/";
+  const mediaLabel = isSeries ? "series" : "movie";
 
   function hoursMinutes(mins) {
     if (!mins) return "—";
@@ -76,7 +82,12 @@
     if (movie.year) {
       stats.push({ label: "Year", value: String(movie.year) });
     }
-    if (movie.runtime) {
+    if (isSeries && movie.seasons) {
+      stats.push({
+        label: "Seasons",
+        value: String(movie.seasons) + (movie.episodes ? " · " + movie.episodes + " ep" : "")
+      });
+    } else if (movie.runtime) {
       stats.push({ label: "Runtime", value: hoursMinutes(movie.runtime) });
     }
     if (movie.rating) {
@@ -115,11 +126,25 @@
         "</div></div>"
       : "";
 
-    var directorHtml = movie.director
-      ? '<div class="glance-block"><p class="glance-block-label">Director</p><div class="glance-chips"><span class="glance-chip accent">' +
+    var directorHtml = "";
+    if (isSeries && movie.creators && movie.creators.length) {
+      directorHtml =
+        '<div class="glance-block"><p class="glance-block-label">Creators</p><div class="glance-chips">' +
+        movie.creators
+          .slice(0, 3)
+          .map(function (c) {
+            return (
+              '<span class="glance-chip accent">' + personLink(c) + "</span>"
+            );
+          })
+          .join("") +
+        "</div></div>";
+    } else if (movie.director) {
+      directorHtml =
+        '<div class="glance-block"><p class="glance-block-label">Director</p><div class="glance-chips"><span class="glance-chip accent">' +
         personLink(movie.director) +
-        "</span></div></div>"
-      : "";
+        "</span></div></div>";
+    }
 
     var cast = (movie.cast || []).slice(0, 4);
     var castHtml = "";
@@ -286,7 +311,9 @@
     if (!movie.tmdbId || !apiKey) return movie.trailerYouTubeId || null;
     try {
       const res = await fetch(
-        "https://api.themoviedb.org/3/movie/" +
+        "https://api.themoviedb.org/3/" +
+          (isSeries ? "tv" : "movie") +
+          "/" +
           movie.tmdbId +
           "/videos?api_key=" +
           encodeURIComponent(apiKey)
@@ -481,7 +508,15 @@
     if (el) el.textContent = v;
   };
   set("title", movie.title);
-  set("tagline", movie.tagline || movie.director + " · " + movie.year);
+  set(
+    "tagline",
+    movie.tagline ||
+      (isSeries
+        ? ((movie.creators && movie.creators[0]) || movie.network || "Series") +
+          " · " +
+          movie.year
+        : (movie.director || "") + " · " + movie.year)
+  );
   set("overview", movie.overview);
   set("overviewShort", movie.overview);
 
@@ -490,7 +525,11 @@
     const items = [
       movie.year,
       movie.rating,
-      hoursMinutes(movie.runtime)
+      isSeries
+        ? (movie.seasons ? movie.seasons + " season" + (movie.seasons > 1 ? "s" : "") : null)
+        : hoursMinutes(movie.runtime),
+      isSeries && movie.network ? movie.network : null,
+      isSeries ? "TV Series" : null
     ]
       .concat(movie.genres || [])
       .filter(Boolean);
@@ -568,24 +607,36 @@
     cast.innerHTML = (movie.cast || []).map(castCardHtml).join("");
   }
 
+  function resolveTitle(s) {
+    if (ReelIndex.getSeries && ReelIndex.getSeries(s)) {
+      return { item: ReelIndex.getSeries(s), href: "../../series/" + s + "/" };
+    }
+    if (ReelIndex.getMovie(s)) {
+      return { item: ReelIndex.getMovie(s), href: "../../movies/" + s + "/" };
+    }
+    return null;
+  }
+
   function renderRelated(slugs) {
     const section = document.getElementById("related-section");
     const grid = document.getElementById("related");
     if (!section || !grid) return;
-    const list = (slugs || []).filter(function (s) {
-      return s && s !== movie.slug && ReelIndex.getMovie(s);
-    });
+    const list = (slugs || [])
+      .map(function (s) {
+        return s && s !== movie.slug ? resolveTitle(s) : null;
+      })
+      .filter(Boolean);
     if (!list.length) {
       section.hidden = true;
       return;
     }
     grid.innerHTML = list
-      .map(function (s) {
-        const m = ReelIndex.getMovie(s);
+      .map(function (entry) {
+        const m = entry.item;
         return (
-          '<a class="card related-card" href="../../movies/' +
-          s +
-          '/">' +
+          '<a class="card related-card" href="' +
+          entry.href +
+          '">' +
           '<img class="card-poster" src="' +
           m.poster +
           '" alt="' +
@@ -595,6 +646,7 @@
           m.title +
           '</div><div class="card-meta">' +
           (m.year || "") +
+          (m.seasons ? " · Series" : "") +
           "</div></div></a>"
         );
       })
@@ -634,21 +686,43 @@
 
   const crew = document.getElementById("crew");
   if (crew) {
-    const writers = (movie.writers || []).map(personLink).join(", ") || "—";
-    const producers = (movie.producers || []).map(personLink).join(", ") || "—";
-    crew.innerHTML =
-      "<p><strong>Director:</strong> " +
-      personLink(movie.director) +
-      "</p>" +
-      "<p><strong>Writers:</strong> " +
-      writers +
-      "</p>" +
-      "<p><strong>Producers:</strong> " +
-      producers +
-      "</p>" +
-      "<p><strong>Executive Producer:</strong> " +
-      personLink(movie.executiveProducer) +
-      "</p>";
+    if (isSeries) {
+      const creators = (movie.creators || []).map(personLink).join(", ") || "—";
+      crew.innerHTML =
+        "<p><strong>Creators:</strong> " +
+        creators +
+        "</p>" +
+        "<p><strong>Network:</strong> " +
+        (movie.network || "—") +
+        "</p>" +
+        "<p><strong>Seasons:</strong> " +
+        (movie.seasons || "—") +
+        (movie.episodes ? " (" + movie.episodes + " episodes)" : "") +
+        "</p>" +
+        "<p><strong>First aired:</strong> " +
+        (movie.firstAirDate || movie.year || "—") +
+        "</p>";
+      var crewHeading = crew.previousElementSibling;
+      if (crewHeading && crewHeading.tagName === "H2") {
+        crewHeading.textContent = "Creators & Details";
+      }
+    } else {
+      const writers = (movie.writers || []).map(personLink).join(", ") || "—";
+      const producers = (movie.producers || []).map(personLink).join(", ") || "—";
+      crew.innerHTML =
+        "<p><strong>Director:</strong> " +
+        personLink(movie.director) +
+        "</p>" +
+        "<p><strong>Writers:</strong> " +
+        writers +
+        "</p>" +
+        "<p><strong>Producers:</strong> " +
+        producers +
+        "</p>" +
+        "<p><strong>Executive Producer:</strong> " +
+        personLink(movie.executiveProducer) +
+        "</p>";
+    }
   }
 
   renderWatch(movie.watch);

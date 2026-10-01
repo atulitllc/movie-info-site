@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://atulitllc.github.io/movie-info-site/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/whats-on/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/watch-free/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/movies/avatar-the-way-of-water/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/movies/avengers-infinity-war/</loc></url>
@@ -22,6 +24,18 @@
   <url><loc>https://atulitllc.github.io/movie-info-site/movies/the-matrix/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/movies/the-odyssey/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/movies/the-shawshank-redemption/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/arcane/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/breaking-bad/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/game-of-thrones/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/house-of-the-dragon/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/severance/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/squid-game/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/stranger-things/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/the-bear/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/the-boys/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/the-last-of-us/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/the-mandalorian/</loc></url>
+  <url><loc>https://atulitllc.github.io/movie-info-site/series/wednesday/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/people/anne-hathaway/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/people/charlize-theron/</loc></url>
   <url><loc>https://atulitllc.github.io/movie-info-site/people/christopher-nolan/</loc></url>

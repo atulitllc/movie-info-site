@@ -193,6 +193,51 @@
 
   initHeroBanner();
 
+  /* ---- Series rail ---- */
+  function seriesCard(s) {
+    const href = "series/" + s.slug + "/";
+    const poster = s.poster || FALLBACK_POSTER;
+    const badge = s.kind === "web-series" ? "Web series" : "Series";
+    return (
+      '<a class="card rail-card" href="' +
+      href +
+      '">' +
+      '<span class="type-badge">' +
+      badge +
+      "</span>" +
+      '<img class="card-poster" src="' +
+      poster +
+      '" alt="' +
+      escapeHtml(s.title) +
+      ' poster" loading="lazy" width="300" height="450" onerror="this.onerror=null;this.src=\'' +
+      FALLBACK_POSTER +
+      '\'"/>' +
+      '<div class="card-body">' +
+      '<h2 class="card-title">' +
+      escapeHtml(s.title) +
+      "</h2>" +
+      '<div class="card-meta">' +
+      escapeHtml(s.year || "") +
+      " · ★ " +
+      Number(s.voteAverage || 0).toFixed(1) +
+      "</div></div></a>"
+    );
+  }
+
+  function renderSeriesRail() {
+    const rail = document.getElementById("series-rail");
+    if (!rail || !ReelIndex.listSeries) return;
+    const list = ReelIndex.listSeries()
+      .slice()
+      .sort(function (a, b) {
+        return Number(b.voteAverage || 0) - Number(a.voteAverage || 0);
+      })
+      .slice(0, 8);
+    rail.innerHTML = list.map(seriesCard).join("");
+  }
+
+  renderSeriesRail();
+
   if (grid) {
     render(allMovies());
     if (search) {

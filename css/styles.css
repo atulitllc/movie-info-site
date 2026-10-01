@@ -230,3 +230,18 @@ img.glance-cast-dot{display:block}
 
 
 .home-section-title{font-size:1.05rem;margin:0 0 .75rem;letter-spacing:-.01em}
+
+
+/* Type badges + horizontal rails (series / what's on) */
+.card{position:relative}
+.type-badge{position:absolute;top:.55rem;left:.55rem;z-index:2;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.22rem .45rem;border-radius:999px;background:rgba(10,14,23,.78);color:var(--accent);border:1px solid rgba(232,184,109,.35);backdrop-filter:blur(6px)}
+.rail-section{margin:0 0 1.75rem}
+.rail-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin:0 0 .75rem}
+.rail-head .home-section-title{margin:0}
+.rail-link{color:var(--accent2);font-size:.9rem;font-weight:600;text-decoration:none}
+.rail-link:hover{color:var(--accent);text-decoration:underline}
+.rail-note{color:var(--muted);font-size:.9rem;margin:-.25rem 0 .75rem;max-width:62ch}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(140px,160px);gap:.85rem;overflow-x:auto;padding:0 0 .5rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.rail .card,.rail-card{scroll-snap-align:start}
+.rail .card-poster{max-height:210px}
+.tmdb-attr{color:var(--muted2);font-size:.78rem;margin:1.5rem 0 0;max-width:70ch;line-height:1.45}
