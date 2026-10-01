@@ -40,11 +40,67 @@
       return;
     }
     wrap.innerHTML =
-      '<div class="trailer-wrap"><iframe src="https://www.youtube-nocookie.com/embed/' +
+      '<div class="trailer-frame"><div class="trailer-wrap"><iframe src="https://www.youtube-nocookie.com/embed/' +
       encodeURIComponent(youtubeId) +
       '" title="' +
       (movie.title || "Trailer") +
-      ' trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div>';
+      ' trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div></div>';
+    section.hidden = false;
+  }
+
+  function starsFromTen(score) {
+    if (score == null || isNaN(Number(score))) return "";
+    var n = Math.max(0, Math.min(10, Number(score)));
+    return (
+      '<span class="review-rating" title="' +
+      n.toFixed(1) +
+      ' / 10"><span aria-hidden="true">★</span> ' +
+      n.toFixed(1) +
+      "</span>"
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderReviews(list) {
+    var section = document.getElementById("reviews-section");
+    var grid = document.getElementById("reviews");
+    if (!section || !grid) return;
+    var reviews = list || movie.reviews || (ReelIndex.REVIEWS && ReelIndex.REVIEWS[slug]) || [];
+    if (!reviews.length) {
+      section.hidden = true;
+      return;
+    }
+    grid.innerHTML = reviews
+      .map(function (r) {
+        return (
+          '<article class="review-card">' +
+          '<div class="review-card-header">' +
+          "<div><p class=\"review-author\">" +
+          escapeHtml(r.author || "Staff") +
+          "</p>" +
+          (r.role
+            ? '<p class="review-role">' + escapeHtml(r.role) + "</p>"
+            : "") +
+          "</div>" +
+          starsFromTen(r.rating) +
+          "</div>" +
+          '<p class="review-quote">' +
+          escapeHtml(r.quote || "") +
+          "</p>" +
+          '<p class="review-source">' +
+          escapeHtml(r.source || "ReelIndex Editorial") +
+          "</p>" +
+          "</article>"
+        );
+      })
+      .join("");
     section.hidden = false;
   }
 
@@ -371,6 +427,8 @@
   }
 
   renderWatch(movie.watch);
+
+  renderReviews(movie.reviews);
 
   showTrailer(movie.trailerYouTubeId || null);
   const apiKey = ReelIndex.getApiKey ? ReelIndex.getApiKey() : "";

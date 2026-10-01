@@ -2541,6 +2541,7 @@
       producers: producers.length ? producers : base.producers,
       executiveProducer: exec || base.executiveProducer,
       related: base.related,
+      reviews: base.reviews,
       cast: (credits.cast || []).slice(0, 16).map(function (c) {
         return {
           name: c.name,
