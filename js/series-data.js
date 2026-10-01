@@ -106,14 +106,14 @@
         "author": "Maya Chen",
         "role": "Staff Critic",
         "rating": 9.5,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "Still the gold standard for serialized crime drama \u2014 meticulous, devastating, and oddly magnetic as Walter's choices tighten like a vise."
       },
       {
         "author": "Jordan Ellis",
         "role": "Staff Writer",
         "rating": 9.2,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "Gilligan's alchemy of chemistry, capitalism, and family loyalty remains unmatched. Rewatches reward every quiet glance."
       }
     ]
@@ -208,7 +208,7 @@
         "author": "Sam Okonkwo",
         "role": "Contributor",
         "rating": 8.4,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "Amblin nostalgia with teeth \u2014 the kids' chemistry and Hawkins' creeping dread still make binge nights feel communal."
       }
     ]
@@ -303,7 +303,7 @@
         "author": "Maya Chen",
         "role": "Staff Critic",
         "rating": 8.8,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "Game adaptation done right: brutal, tender, and anchored by Pascal and Ramsey's uneasy trust."
       }
     ]
@@ -752,7 +752,7 @@
         "author": "Maya Chen",
         "role": "Staff Critic",
         "rating": 8.0,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "A web-series phenomenon with satirical bite \u2014 children's games turned into a mirror of inequality and desperation."
       }
     ]
@@ -846,7 +846,7 @@
         "author": "Jordan Ellis",
         "role": "Staff Writer",
         "rating": 9.0,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "Workplace dread as high art \u2014 chilly design, sly humor, and a mystery that respects your intelligence."
       }
     ]
@@ -1028,7 +1028,7 @@
         "author": "Sam Okonkwo",
         "role": "Contributor",
         "rating": 9.1,
-        "source": "ReelIndex Editorial",
+        "source": "WhereToWatchFree Editorial",
         "quote": "A streaming original that raises the bar for animation: lyrical fights, tragic sisters, and a city that feels alive."
       }
     ]

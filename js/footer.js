@@ -20,8 +20,8 @@
       '<div class="container footer-inner">' +
         '<div class="footer-brand">' +
           '<a class="footer-logo" href="' + prefix + '" aria-label="WhereToWatchFree">' +
-            '<img class="logo-lockup logo-lockup--dark" src="' + prefix + 'assets/brand/lockup-horizontal-dark.svg" alt="WhereToWatchFree" width="180" height="36" decoding="async" />' +
-            '<img class="logo-lockup logo-lockup--light" src="' + prefix + 'assets/brand/lockup-horizontal-light.svg" alt="" width="180" height="36" decoding="async" />' +
+            '<img class="logo-lockup logo-lockup--dark" src="' + prefix + 'assets/brand/lockup-horizontal-dark.svg" alt="WhereToWatchFree" width="155" height="36" decoding="async" />' +
+            '<img class="logo-lockup logo-lockup--light" src="' + prefix + 'assets/brand/lockup-horizontal-light.svg" alt="" width="155" height="36" decoding="async" />' +
           "</a>" +
           '<p class="footer-tagline">Browse movies &amp; series. Find where to watch online — legally, including free-with-ads.</p>' +
           '<p class="footer-copy">&copy; ' + year + " WhereToWatchFree · ATULIT LLC</p>" +
@@ -59,7 +59,7 @@
               '<a class="footer-tmdb-logo" href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" title="The Movie Database">' +
                 '<img src="' + prefix + 'assets/providers/tmdb.svg" alt="The Movie Database (TMDB)" width="48" height="48" loading="lazy" />' +
               "</a>" +
-              '<p class="footer-tmdb-notice">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>' +
+              '<p class="footer-tmdb-notice">Featured images include material from TMDB. This product is not endorsed or certified by TMDB.</p>' +
             "</div>" +
           "</div>" +
         "</div>" +

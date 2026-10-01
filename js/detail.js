@@ -298,39 +298,13 @@
           escapeHtml(r.quote || "") +
           "</p>" +
           '<p class="review-source">' +
-          escapeHtml(r.source || "ReelIndex Editorial") +
+          escapeHtml(r.source || "WhereToWatchFree Editorial") +
           "</p>" +
           "</article>"
         );
       })
       .join("");
     section.hidden = false;
-  }
-
-  async function maybeFetchTrailer(apiKey) {
-    if (!movie.tmdbId || !apiKey) return movie.trailerYouTubeId || null;
-    try {
-      const res = await fetch(
-        "https://api.themoviedb.org/3/" +
-          (isSeries ? "tv" : "movie") +
-          "/" +
-          movie.tmdbId +
-          "/videos?api_key=" +
-          encodeURIComponent(apiKey)
-      );
-      const data = await res.json();
-      const vids = data.results || [];
-      const trailer =
-        vids.find(function (v) {
-          return v.site === "YouTube" && v.type === "Trailer" && v.official;
-        }) ||
-        vids.find(function (v) {
-          return v.site === "YouTube" && v.type === "Trailer";
-        });
-      return trailer ? trailer.key : movie.trailerYouTubeId || null;
-    } catch (e) {
-      return movie.trailerYouTubeId || null;
-    }
   }
 
   const PROVIDER_ICONS = {
@@ -500,8 +474,13 @@
   }
   const poster = document.getElementById("poster");
   if (poster) {
-    poster.src = movie.poster;
-    poster.alt = movie.title + " poster";
+    poster.src =
+      movie.poster ||
+      "data:image/svg+xml," +
+        encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect fill="#122536" width="100%" height="100%"/><text x="50%" y="50%" fill="#F4F0E6" text-anchor="middle" font-family="sans-serif" font-size="18">No poster</text></svg>'
+        );
+    poster.alt = (movie.title || "Title") + " poster";
   }
   const set = function (id, v) {
     const el = document.getElementById(id);
@@ -604,7 +583,9 @@
 
   const cast = document.getElementById("cast");
   if (cast) {
-    cast.innerHTML = (movie.cast || []).map(castCardHtml).join("");
+    var castHtml = (movie.cast || []).map(castCardHtml).join("");
+    cast.innerHTML = castHtml;
+    if (!castHtml && cast.parentElement) cast.parentElement.hidden = true;
   }
 
   function resolveTitle(s) {
@@ -656,34 +637,6 @@
 
   renderRelated(movie.related);
 
-  async function maybeFetchSimilar(apiKey) {
-    if (!apiKey || !movie.tmdbId) return;
-    const section = document.getElementById("related-section");
-    const grid = document.getElementById("related");
-    if (!section || !grid || (movie.related && movie.related.length)) return;
-    try {
-      const res = await fetch(
-        "https://api.themoviedb.org/3/movie/" +
-          movie.tmdbId +
-          "/similar?api_key=" +
-          encodeURIComponent(apiKey)
-      );
-      const data = await res.json();
-      const local = ReelIndex.listMovies ? ReelIndex.listMovies() : [];
-      const byTmdb = {};
-      local.forEach(function (m) {
-        if (m.tmdbId) byTmdb[m.tmdbId] = m;
-      });
-      const hits = (data.results || [])
-        .map(function (r) {
-          return byTmdb[r.id];
-        })
-        .filter(Boolean)
-        .slice(0, 4);
-      if (hits.length) renderRelated(hits.map(function (m) { return m.slug; }));
-    } catch (e) { /* ignore */ }
-  }
-
   const crew = document.getElementById("crew");
   if (crew) {
     if (isSeries) {
@@ -730,11 +683,4 @@
   renderReviews(movie.reviews);
 
   showTrailer(movie.trailerYouTubeId || null);
-  const apiKey = ReelIndex.getApiKey ? ReelIndex.getApiKey() : "";
-  if (apiKey && movie.tmdbId) {
-    maybeFetchTrailer(apiKey).then(function (id) {
-      if (id) showTrailer(id);
-    });
-    maybeFetchSimilar(apiKey);
-  }
 })();

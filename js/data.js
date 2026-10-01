@@ -3,8 +3,6 @@
  * Add movies here — keyed by URL slug. detail.js and home.js read this.
  */
 (function (global) {
-  const IMG = "https://image.tmdb.org/t/p";
-
   const FALLBACK = {
   "the-odyssey": {
     "slug": "the-odyssey",
@@ -2444,16 +2442,6 @@
   }
 };
 
-  const TMDB_IMG_BASE = IMG;
-  const STORAGE_KEY = "tmdb_api_key";
-
-  function hoursMinutes(mins) {
-    if (!mins && mins !== 0) return "";
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return h + "h " + m + "m";
-  }
-
   function getMovies() {
     return FALLBACK;
   }
@@ -2462,130 +2450,13 @@
     return FALLBACK[slug] || null;
   }
 
-  function getApiKey() {
-    try {
-      return localStorage.getItem(STORAGE_KEY) || "";
-    } catch (e) {
-      return "";
-    }
-  }
-
-  function setApiKey(key) {
-    try {
-      if (key) localStorage.setItem(STORAGE_KEY, key);
-      else localStorage.removeItem(STORAGE_KEY);
-    } catch (e) {
-      /* ignore */
-    }
-  }
-
-  async function fetchFromTmdb(slug, apiKey) {
-    const base = FALLBACK[slug];
-    if (!base || !base.tmdbId) throw new Error("Unknown movie slug");
-    const id = base.tmdbId;
-    const [details, credits] = await Promise.all([
-      fetch(
-        "https://api.themoviedb.org/3/movie/" +
-          id +
-          "?api_key=" +
-          encodeURIComponent(apiKey)
-      ).then(function (r) {
-        return r.json();
-      }),
-      fetch(
-        "https://api.themoviedb.org/3/movie/" +
-          id +
-          "/credits?api_key=" +
-          encodeURIComponent(apiKey)
-      ).then(function (r) {
-        return r.json();
-      })
-    ]);
-    if (details.status_code) {
-      throw new Error(details.status_message || "TMDB error");
-    }
-    const crew = credits.crew || [];
-    const director =
-      (crew.find(function (c) {
-        return c.job === "Director";
-      }) || {}).name || base.director;
-    const producers = crew
-      .filter(function (c) {
-        return c.job === "Producer";
-      })
-      .map(function (c) {
-        return c.name;
-      });
-    const writers = crew
-      .filter(function (c) {
-        return c.job === "Screenplay" || c.job === "Writer";
-      })
-      .map(function (c) {
-        return c.name;
-      });
-    const exec = (
-      crew.find(function (c) {
-        return c.job === "Executive Producer";
-      }) || {}
-    ).name;
-
-    return {
-      slug: slug,
-      tmdbId: id,
-      title: details.title || base.title,
-      year: (details.release_date || base.releaseDate || "").slice(0, 4) || base.year,
-      releaseDate: details.release_date || base.releaseDate,
-      runtime: details.runtime || base.runtime,
-      rating: base.rating,
-      voteAverage: details.vote_average != null ? details.vote_average : base.voteAverage,
-      genres: (details.genres || []).map(function (g) {
-        return g.name;
-      }).length
-        ? (details.genres || []).map(function (g) {
-            return g.name;
-          })
-        : base.genres,
-      tagline: details.tagline || base.tagline,
-      overview: details.overview || base.overview,
-      poster: details.poster_path
-        ? TMDB_IMG_BASE + "/w500" + details.poster_path
-        : base.poster,
-      backdrop: details.backdrop_path
-        ? TMDB_IMG_BASE + "/w780" + details.backdrop_path
-        : base.backdrop,
-      trailerYouTubeId: base.trailerYouTubeId,
-      director: director,
-      writers: writers.length ? writers : base.writers,
-      producers: producers.length ? producers : base.producers,
-      executiveProducer: exec || base.executiveProducer,
-      related: base.related,
-      reviews: base.reviews,
-      cast: (credits.cast || []).slice(0, 16).map(function (c) {
-        return {
-          name: c.name,
-          character: c.character,
-          photo: c.profile_path
-            ? TMDB_IMG_BASE + "/w185" + c.profile_path
-            : (base.cast.find(function (b) { return b.name === c.name; }) || {}).photo
-        };
-      }),
-      watch: base.watch
-    };
-  }
-
   global.ReelIndex = {
     SITE_NAME: "WhereToWatchFree",
     SITE_BASE: "https://atulitllc.github.io/movie-info-site",
     FALLBACK: FALLBACK,
     MOVIES: FALLBACK,
-    TMDB_IMG_BASE: TMDB_IMG_BASE,
-    STORAGE_KEY: STORAGE_KEY,
-    hoursMinutes: hoursMinutes,
     getMovies: getMovies,
-    getMovie: getMovie,
-    getApiKey: getApiKey,
-    setApiKey: setApiKey,
-    fetchFromTmdb: fetchFromTmdb
+    getMovie: getMovie
   };
 })(typeof window !== "undefined" ? window : globalThis);
 

@@ -1,44 +1,51 @@
 # WhereToWatchFree Brand Pack
 
-Legal where-to-watch / movie information branding for **wheretowatchfree.com**.
+Legal where-to-watch branding for **wheretowatchfree.com**.
 
 ## Direction
 
-**Aperture mark** — concentric lens ring + hexagonal iris + amber play triangle.
-Cinematic “watch / look” metaphor without pirate or spammy “FREE MOVIES” energy.
-Locked over viewfinder and ticket concepts for small-size clarity and Remy/SPHERE-adjacent restraint (navy + paper + single amber accent).
+**LOCKED: Clapperboard mark + condensed wordmark.**
 
-## Palette (3 colors)
+The mark is a coral clapperboard (navy/paper slate, amber hinge) with a coral play badge. It replaces the retired aperture / lens mark.
+
+## Wordmark
+
+**Barlow Condensed SemiBold**, outlined in the SVG (no live font dependency). Spelling is exact: **WhereToWatchFree** (no spaces).
+
+**Free** stays coral `#FF6B4A`. The rest of the wordmark is cinema navy on light backgrounds and warm paper on dark backgrounds.
+
+The horizontal lockup is about **20% narrower** than the previous Geist lockup (viewBox width 447.4 versus 559.9).
+
+## Palette
 
 | Role | Hex | Notes |
 |------|-----|-------|
-| Cinema navy | `#0B1C2C` | Primary mark strokes, wordmark on light |
-| Warm paper | `#F4F0E6` | Light backgrounds; mark/wordmark on dark |
-| Amber accent | `#E8A838` | Play triangle + **Free** in lockups |
-
-Do not add neon or loud red “FREE” badges. Keep Free as a quiet amber accent.
+| Cinema navy | `#0B1C2C` | Mark slate, wordmark on light, dark UI background |
+| Warm paper | `#F4F0E6` | Light backgrounds; wordmark on dark |
+| Coral | `#FF6B4A` | Clapper, play badge, and **Free** |
+| Amber hinge | `#F5A524` | Clapper hinge only |
 
 ## Name usage
 
 - Brand string: **WhereToWatchFree** (no spaces).
-- Visual hierarchy: `WhereToWatch` (navy/paper) + `Free` (amber, same size, slightly softer weight).
-- Do not split into “Where To Watch Free” with spaces in official lockups.
+- Do not split the official lockup into “Where To Watch Free”.
+- Prototype name ReelIndex stays in `window.ReelIndex` for scripts. It is not a customer-facing brand.
 
 ## Files
 
 ### Mark (icon only)
 - `mark.svg` — master vector (transparent)
-- `mark-128.png` / `mark-256.png` / `mark-512.png` / `mark-1024.png` — transparent PNGs
+- `mark-128.png` / `mark-256.png` / `mark-512.png` / `mark-1024.png`
 
 ### Favicon / app
-- `favicon.svg` — slightly bolder strokes for tiny sizes
+- `favicon.svg` — clapperboard simplified for tiny sizes
 - `favicon-32.png` / `favicon-16.png`
-- `apple-touch-180.png` — navy rounded square + paper mark + amber play
+- `apple-touch-180.png`
 
 ### Lockups
-- `lockup-horizontal-light.svg` + `lockup-horizontal-light-1200.png` — navy mark + wordmark (light backgrounds)
-- `lockup-horizontal-dark.svg` + `lockup-horizontal-dark-1200.png` — paper mark + wordmark (dark backgrounds)
-- `lockup-stacked-light.svg` + `lockup-stacked-light-800.png` — mark above stacked wordmark
+- `lockup-horizontal-light.svg` + `lockup-horizontal-light-1200.png` — light backgrounds
+- `lockup-horizontal-dark.svg` + `lockup-horizontal-dark-1200.png` — dark backgrounds
+- `lockup-stacked-light.svg` + `lockup-stacked-light-800.png`
 - `lockup-stacked-dark.svg` + `lockup-stacked-dark-800.png`
 
 ### Wordmark only
@@ -50,19 +57,16 @@ Do not add neon or loud red “FREE” badges. Keep Free as a quiet amber accent
 | Context | Use |
 |---------|-----|
 | Website header (light) | `lockup-horizontal-light` |
-| Website header (dark / hero navy) | `lockup-horizontal-dark` |
-| App icon / PWA / iOS | `apple-touch-180` |
-| Browser tab | `favicon.svg` or `favicon-32` |
-| Social avatar / app store icon | `mark-512` or `mark-1024` on navy or paper square |
-| Narrow / mobile stacked | `lockup-stacked-*` |
+| Website header (dark) | `lockup-horizontal-dark` |
+| App icon / iOS | `apple-touch-180` |
+| Browser tab | `favicon.svg` (PNG fallbacks for older browsers) |
+| Social avatar | `mark-512` or `mark-1024` |
+| Narrow / stacked layouts | `lockup-stacked-*` |
 | Text-only footer / legal | `wordmark-only-*` |
-| Clear space | Keep ≥ mark radius of padding around lockups |
 
-## Typography note
-
-Wordmarks are outlined Geist paths (no live font dependency). Approximate for UI: Geist / Inter / system-ui, weight ~600 for WhereToWatch, ~500 for Free.
+Header markup keeps both horizontal lockups in the DOM. `[data-theme="dark"]` shows the dark lockup; `[data-theme="light"]` shows the light lockup. Paths are relative (`assets/brand/…`, `../assets/brand/…`, `../../assets/brand/…`) so the same files work on GitHub Pages project sites and on Cloudflare Pages at the domain root.
 
 ## Domains
 
 Primary: wheretowatchfree.com  
-Prototype name ReelIndex is retired for customer-facing brand.
+Static prototype: the GitHub Pages project path and any Cloudflare Pages root.
