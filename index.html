@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ReelIndex — Discover movies, cast & where to watch</title>
-  <meta name="description" content="ReelIndex is a fast, SEO-friendly movie info site with cast, crew, storylines, and where-to-watch guides." />
+  <title>ReelIndex — Browse Movies &amp; Watch Online Free (Legal)</title>
+  <meta name="description" content="Browse movies on ReelIndex: cast, storyline, trailers, and where to watch online — including legal free-with-ads options on Tubi, Pluto TV, Plex, and more." />
   <link rel="canonical" href="https://atulitllc.github.io/movie-info-site/" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="ReelIndex — Discover movies" />
-  <meta property="og:description" content="Clean movie pages with cast, director, storyline, and where to watch." />
+  <meta property="og:title" content="ReelIndex — Browse Movies &amp; Watch Online Free" />
+  <meta property="og:description" content="Discover movies with cast, crew, storylines, and legal where-to-watch guides — including free-with-ads platforms." />
   <meta property="og:url" content="https://atulitllc.github.io/movie-info-site/" />
   <meta property="og:image" content="https://image.tmdb.org/t/p/w500/5rhTDKUhPYvpdQIijFIs5VoWsON.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="ReelIndex — Discover movies" />
-  <meta name="twitter:description" content="Clean movie pages with cast, director, storyline, and where to watch." />
+  <meta name="twitter:title" content="ReelIndex — Browse Movies &amp; Watch Online Free" />
+  <meta name="twitter:description" content="Discover movies with cast, crew, storylines, and legal where-to-watch guides — including free-with-ads platforms." />
   <script src="js/theme-boot.js"></script>
   <link rel="stylesheet" href="css/styles.css" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebSite","name":"ReelIndex","url":"https://atulitllc.github.io/movie-info-site/","potentialAction":{"@type":"SearchAction","target":"https://atulitllc.github.io/movie-info-site/?q={search_term_string}","query-input":"required name=search_term_string"}}
+  {"@context":"https://schema.org","@type":"WebSite","name":"ReelIndex","url":"https://atulitllc.github.io/movie-info-site/","description":"Browse movies and find legal free and subscription watch options.","potentialAction":{"@type":"SearchAction","target":"https://atulitllc.github.io/movie-info-site/?q={search_term_string}","query-input":"required name=search_term_string"}}
   </script>
 </head>
 <body>
@@ -27,6 +27,7 @@
       <div class="nav-right">
         <nav class="nav-links" aria-label="Primary">
           <a href="./">Home</a>
+          <a href="watch-free/">Watch free</a>
           <a href="movies/the-odyssey/">The Odyssey</a>
         </nav>
         <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
@@ -39,9 +40,12 @@
   <main>
     <section class="hero-home">
       <div class="container">
-        <h1>Movie info that looks as good as it ranks.</h1>
-        <p>SEO-first pages for cast, crew, storyline, and where to watch — from Christopher Nolan’s <em>The Odyssey</em> to classics and new releases.</p>
-        <a class="btn btn-primary" href="movies/the-odyssey/">Open The Odyssey</a>
+        <h1>Browse movies. Find where to watch online — including free.</h1>
+        <p>SEO-friendly pages for cast, crew, storyline, trailers, and legal streaming guides. Check free-with-ads options on Tubi, Pluto TV, Plex, and similar platforms, or jump into Christopher Nolan’s <em>The Odyssey</em>.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="watch-free/">Watch free (legal)</a>
+          <a class="btn" href="movies/the-odyssey/">Open The Odyssey</a>
+        </div>
       </div>
     </section>
     <div class="container">
@@ -49,6 +53,7 @@
         <label class="visually-hidden" for="search">Search movies</label>
         <input id="search" type="search" placeholder="Search titles, years, genres…" />
       </div>
+      <h2 class="home-section-title">All movies</h2>
       <div id="movie-grid" class="grid" aria-live="polite"></div>
       <details class="api-panel">
         <summary>TMDB live refresh (optional API key)</summary>
@@ -59,7 +64,7 @@
       </details>
     </div>
   </main>
-  <footer class="site-footer"><div class="container"><span>© ReelIndex · ATULIT LLC prototype</span><span>Not affiliated with TMDB or Universal</span></div></footer>
+  <footer class="site-footer"><div class="container"><span>© ReelIndex · ATULIT LLC prototype</span><span>Legal streaming only · Not affiliated with TMDB or Universal</span></div></footer>
   <script src="js/data.js"></script>
   <script src="js/tmdb.js"></script>
   <script src="js/theme.js"></script>

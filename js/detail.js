@@ -52,8 +52,8 @@
     var icon = PROVIDER_ICONS[p.id];
     if (icon) {
       return (
-        '<img class="glance-watch-logo" src="https://cdn.simpleicons.org/' +
-        icon +
+        '<img class="glance-watch-logo" src="' +
+        providerAssetUrl(icon) +
         '" alt="' +
         escapeHtml(p.label || p.id) +
         '" width="30" height="30" loading="lazy" title="' +
@@ -307,33 +307,37 @@
   }
 
   const PROVIDER_ICONS = {
-    netflix: "netflix/E50914",
-    hulu: "hulu/1CE783",
-    "disney-plus": "disneyplus/113CCF",
-    max: "max/002BE7",
-    peacock: "peacock/000000",
-    "paramount-plus": "paramountplus/0064FF",
-    amazon: "prime/00A8E1",
-    "amazon-prime": "prime/00A8E1",
-    apple: "appletv/000000",
-    tubi: "tubi/FA382F",
-    pluto: "plutotv/FFFFFF",
-    plex: "plex/E5A00D",
-    theaters: null,
-    tmdb: "themoviedb/01B4E4",
-    imax: null
+    netflix: "netflix.svg",
+    hulu: "hulu.svg",
+    "disney-plus": "disney-plus.svg",
+    max: "max.svg",
+    peacock: "peacock.svg",
+    "paramount-plus": "paramount-plus.svg",
+    amazon: "amazon-prime.svg",
+    "amazon-prime": "amazon-prime.svg",
+    apple: "apple.svg",
+    tubi: "tubi.svg",
+    pluto: "pluto.svg",
+    plex: "plex.svg",
+    theaters: "theaters.svg",
+    tmdb: "tmdb.svg",
+    imax: "imax.svg"
   };
+
+  function providerAssetUrl(filename) {
+    // Movie pages live at /movies/<slug>/
+    return "../../assets/providers/" + filename;
+  }
 
   function providerLogo(p) {
     const icon = PROVIDER_ICONS[p.id];
     if (icon) {
       return (
-        '<img class="watch-logo" src="https://cdn.simpleicons.org/' +
-        icon +
+        '<img class="watch-logo" src="' +
+        providerAssetUrl(icon) +
         '" alt="" width="28" height="28" loading="lazy" />'
       );
     }
-    // inline SVG mark for theaters / imax / unknown
     const label = (p.label || p.id || "?").charAt(0).toUpperCase();
     return (
       '<span class="watch-logo watch-logo-fallback" aria-hidden="true">' +
@@ -373,9 +377,52 @@
     );
   }
 
+
+  function setWatchSeoCopy(watch) {
+    var heading = document.getElementById("watch-heading");
+    var intro = document.getElementById("watch-intro");
+    var free = (watch && watch.free) || [];
+    var paid = (watch && watch.paid) || [];
+    if (Array.isArray(watch)) {
+      free = [];
+      paid = watch;
+    }
+    var freeNames = free.map(function (p) { return p.label || p.id; }).filter(Boolean);
+    var paidNames = paid
+      .map(function (p) { return p.label || p.id; })
+      .filter(function (n) { return n && !/theater|imax/i.test(n); });
+    if (heading) {
+      heading.textContent = freeNames.length
+        ? "Watch online free & where to stream"
+        : "Where to watch online";
+    }
+    if (intro) {
+      if (freeNames.length) {
+        intro.textContent =
+          "Legal free-with-ads options to check for " +
+          (movie.title || "this title") +
+          ": " +
+          freeNames.join(", ") +
+          ". Availability varies by region — we only list legitimate platforms, never piracy or illegal downloads." +
+          (paidNames.length ? " Also stream on " + paidNames.slice(0, 4).join(", ") + "." : "");
+      } else if (paidNames.length) {
+        intro.textContent =
+          "Where to watch " +
+          (movie.title || "this title") +
+          " online on legal services such as " +
+          paidNames.slice(0, 4).join(", ") +
+          ". Availability varies by region.";
+      } else {
+        intro.textContent =
+          "Streaming availability varies by region. Check legal platforms linked below.";
+      }
+    }
+  }
+
   function renderWatch(watch) {
     const el = document.getElementById("watch");
     if (!el) return;
+    setWatchSeoCopy(watch);
     // New shape: { paid:[], free:[] } — also tolerate legacy array
     if (Array.isArray(watch)) {
       el.innerHTML =
