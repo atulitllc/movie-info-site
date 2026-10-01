@@ -4,7 +4,7 @@ SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail page
 
 **Brand:** WhereToWatchFree — locked Clapperboard mark and condensed Barlow wordmark (navy `#0B1C2C`, paper `#F4F0E6`, coral `#FF6B4A`, amber hinge `#F5A524`). `window.ReelIndex` remains the script namespace only.
 
-**Live:** https://atulitllc.github.io/movie-info-site/
+**Live:** https://wheretowatchfree.com/
 
 ## Features
 

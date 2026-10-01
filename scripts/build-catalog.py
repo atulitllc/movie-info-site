@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 IMDB = Path("/tmp/imdb")
-SITE = "https://atulitllc.github.io/movie-info-site"
+SITE = "https://wheretowatchfree.com"
 METAHUB = "https://images.metahub.space"
 SOURCE = (
     "IMDb public datasets title.basics and title.ratings. "
