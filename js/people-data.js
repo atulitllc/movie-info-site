@@ -1,6 +1,9 @@
 /**
  * ReelIndex people catalog
- * Keyed by URL slug. person.js and detail.js read this via ReelIndex.PEOPLE.
+ * Curated bios keyed by URL slug (ReelIndex.PEOPLE).
+ * detail.js and person.js also resolve anyone credited in the movie catalog
+ * (FALLBACK and MOVIES) or the series catalog, so bulk titles stay linked
+ * without inventing TMDB person ids.
  */
 (function (global) {
   const IMG = "https://image.tmdb.org/t/p";
@@ -173,13 +176,378 @@
       .replace(/^-+|-+$/g, "");
   }
 
+  // Numeric ids are not page slugs. Do not invent TMDB person ids for routes.
+  function normalizeSlugToken(slug) {
+    if (slug == null || slug === "") return "";
+    var s = String(slug).trim();
+    if (!s || /^\d+$/.test(s)) return "";
+    var parts = s.split("/").filter(Boolean);
+    s = parts.length ? parts[parts.length - 1] : "";
+    if (!s || /^\d+$/.test(s)) return "";
+    return s;
+  }
+
+  function portraitUrl(url) {
+    if (!url || typeof url !== "string") return "";
+    if (url.indexOf("image.tmdb.org") === -1) return url;
+    return url.replace(/\/t\/p\/w\d+\//, "/t/p/w500/");
+  }
+
+  function nameList(value) {
+    if (!value) return [];
+    if (typeof value === "string") return value.trim() ? [value.trim()] : [];
+    if (Array.isArray(value)) {
+      var out = [];
+      value.forEach(function (n) {
+        if (typeof n === "string" && n.trim()) out.push(n.trim());
+        else if (n && typeof n === "object") {
+          var label = n.name || n.actor || n.person || "";
+          if (label) out.push(String(label));
+        }
+      });
+      return out;
+    }
+    if (typeof value === "object") {
+      var label = value.name || value.actor || value.person || "";
+      return label ? [String(label)] : [];
+    }
+    return [];
+  }
+
+  function castList(title) {
+    var raw = title.cast || title.topCast || title.top_billed || title.actors || [];
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .map(function (c) {
+        if (typeof c === "string") return { name: c, character: "", photo: "", slug: "" };
+        if (!c || typeof c !== "object") return null;
+        return {
+          name: c.name || c.actor || c.person || "",
+          character: c.character || c.role || c.characterName || "",
+          photo: c.photo || c.profile || c.profileUrl || c.image || "",
+          slug: c.slug || c.personSlug || ""
+        };
+      })
+      .filter(function (c) {
+        return c && (c.name || c.slug);
+      });
+  }
+
+  function identityFrom(name, explicitSlug, photo) {
+    if (name && typeof name === "object") {
+      return identityFrom(
+        name.name || name.actor || name.person || "",
+        name.slug || name.personSlug || explicitSlug,
+        name.photo || name.profile || name.image || photo
+      );
+    }
+    var label = typeof name === "string" ? name.trim() : "";
+    var keys = [];
+    var derived = slugify(label);
+    var token = normalizeSlugToken(explicitSlug);
+    if (derived) keys.push(derived);
+    if (token && keys.indexOf(token) === -1) keys.push(token);
+    return { name: label, keys: keys, photo: photo || "" };
+  }
+
+  function movieList() {
+    var bySlug = {};
+    function absorb(src) {
+      if (!src) return;
+      Object.keys(src).forEach(function (k) {
+        var item = src[k];
+        if (!item || typeof item !== "object") return;
+        if (!item.title && item.name) item = Object.assign({}, item, { title: item.name });
+        var slug = item.slug || k;
+        if (!slug) return;
+        var looksLikeTitle =
+          typeof item.title === "string" || item.cast || item.director || item.topCast || item.actors;
+        if (!looksLikeTitle) return;
+        bySlug[slug] = item;
+      });
+    }
+    // Curated FALLBACK and bulk/live MOVIES can diverge. Union by slug; MOVIES wins.
+    absorb(R.FALLBACK);
+    absorb(R.MOVIES);
+    if (!Object.keys(bySlug).length && R.listMovies) {
+      R.listMovies().forEach(function (m) {
+        if (m && m.slug) bySlug[m.slug] = m;
+      });
+    }
+    return Object.keys(bySlug).map(function (k) {
+      return bySlug[k];
+    });
+  }
+
+  function seriesList() {
+    var bySlug = {};
+    function absorb(src) {
+      if (!src) return;
+      Object.keys(src).forEach(function (k) {
+        var item = src[k];
+        if (!item || typeof item !== "object") return;
+        var slug = item.slug || k;
+        if (!slug) return;
+        bySlug[slug] = item;
+      });
+    }
+    absorb(R.SERIES_FALLBACK);
+    absorb(R.SERIES);
+    if (!Object.keys(bySlug).length && R.listSeries) {
+      R.listSeries().forEach(function (m) {
+        if (m && m.slug) bySlug[m.slug] = m;
+      });
+    }
+    return Object.keys(bySlug).map(function (k) {
+      return bySlug[k];
+    });
+  }
+
+  function compareCredits(a, b) {
+    var ay = parseInt(a.year, 10) || 0;
+    var by = parseInt(b.year, 10) || 0;
+    if (ay !== by) return by - ay;
+    return String(a.title || "").localeCompare(String(b.title || ""));
+  }
+
+  var indexCache = null;
+  var indexSig = "";
+
+  function catalogSignature() {
+    function part(list) {
+      return list
+        .map(function (m) {
+          if (!m) return "";
+          var castN = (m.cast || m.topCast || m.actors || []).length || 0;
+          return (
+            (m.slug || "") +
+            ":" +
+            castN +
+            ":" +
+            (typeof m.director === "string" ? m.director : "") +
+            ":" +
+            ((m.creators || []).length || 0)
+          );
+        })
+        .join(",");
+    }
+    return part(movieList()) + "#" + part(seriesList());
+  }
+
+  function buildIndex() {
+    var index = {};
+    function touch(key, name, photo) {
+      if (!index[key]) {
+        index[key] = { name: name || "", photo: "", titles: {} };
+      }
+      var entry = index[key];
+      if (name && (!entry.name || name.length > entry.name.length)) entry.name = name;
+      if (photo && !entry.photo) entry.photo = portraitUrl(photo);
+      return entry;
+    }
+    function addPerson(identity, packed, role) {
+      if (!identity.keys.length || !role) return;
+      identity.keys.forEach(function (key) {
+        var entry = touch(key, identity.name, identity.photo);
+        var id = packed.kind + ":" + packed.slug;
+        if (!entry.titles[id]) {
+          entry.titles[id] = {
+            slug: packed.slug,
+            title: packed.title || packed.slug,
+            year: packed.year || "",
+            poster: packed.poster || "",
+            kind: packed.kind,
+            roles: []
+          };
+        }
+        if (entry.titles[id].roles.indexOf(role) === -1) entry.titles[id].roles.push(role);
+      });
+    }
+    function considerTitle(title, kind) {
+      if (!title || !title.slug) return;
+      var packed = {
+        slug: title.slug,
+        title: title.title,
+        year: title.year,
+        poster: title.poster,
+        kind: kind
+      };
+      castList(title).forEach(function (c) {
+        addPerson(identityFrom(c.name, c.slug, c.photo), packed, c.character || "Cast");
+      });
+      if (kind === "movie") {
+        nameList(title.director).forEach(function (n) {
+          addPerson(identityFrom(n), packed, "Director");
+        });
+        nameList(title.writers || title.writer).forEach(function (n) {
+          addPerson(identityFrom(n), packed, "Writer");
+        });
+        nameList(title.producers || title.producer).forEach(function (n) {
+          addPerson(identityFrom(n), packed, "Producer");
+        });
+        nameList(title.executiveProducer || title.executiveProducers).forEach(function (n) {
+          addPerson(identityFrom(n), packed, "Executive Producer");
+        });
+      } else {
+        nameList(title.creators || title.createdBy).forEach(function (n) {
+          addPerson(identityFrom(n), packed, "Creator");
+        });
+      }
+    }
+    movieList().forEach(function (m) {
+      considerTitle(m, "movie");
+    });
+    seriesList().forEach(function (m) {
+      considerTitle(m, "series");
+    });
+    Object.keys(index).forEach(function (key) {
+      var entry = index[key];
+      entry.credits = Object.keys(entry.titles).map(function (id) {
+        return entry.titles[id];
+      });
+      entry.credits.sort(compareCredits);
+      entry.credits.forEach(function (c) {
+        c.role = c.roles.join(" · ");
+      });
+    });
+    return index;
+  }
+
+  function ensureIndex() {
+    var sig = catalogSignature();
+    if (indexCache && indexSig === sig) return indexCache;
+    indexSig = sig;
+    indexCache = buildIndex();
+    return indexCache;
+  }
+
+  function mergeKnownFor(person, credits) {
+    var seen = {};
+    credits.forEach(function (c) {
+      seen[c.slug] = true;
+    });
+    (person.knownFor || []).forEach(function (k) {
+      if (!k) return;
+      var slug = typeof k === "string" ? k : k.slug;
+      if (!slug || seen[slug]) return;
+      var movie = R.getMovie && R.getMovie(slug);
+      var series = !movie && R.getSeries ? R.getSeries(slug) : null;
+      var item = movie || series;
+      if (!item && typeof k !== "object") return;
+      credits.push({
+        slug: slug,
+        title: (item && item.title) || (typeof k === "object" && k.title) || slug,
+        year: (item && item.year) || "",
+        poster: (item && item.poster) || "",
+        kind: series ? "series" : "movie",
+        role: (typeof k === "object" && (k.role || k.character)) || ""
+      });
+      seen[slug] = true;
+    });
+    credits.sort(compareCredits);
+    return credits;
+  }
+
+  function biographyFromCredits(person) {
+    var credits = person.credits || [];
+    var name = person.name || "This person";
+    if (!credits.length) return name + " is listed in the WhereToWatchFree catalog.";
+    if (credits.length === 1) {
+      var only = credits[0];
+      var role = only.role ? " (" + only.role + ")" : "";
+      return (
+        name +
+        " is credited on " +
+        (only.title || "a title") +
+        role +
+        " in the WhereToWatchFree catalog."
+      );
+    }
+    var titles = credits
+      .slice(0, 3)
+      .map(function (c) {
+        return c.title;
+      })
+      .filter(Boolean);
+    return (
+      name +
+      " is credited on " +
+      credits.length +
+      " titles in the WhereToWatchFree catalog, including " +
+      titles.join(", ") +
+      "."
+    );
+  }
+
+  function cloneCredits(entry) {
+    if (!entry || !entry.credits) return [];
+    return entry.credits.map(function (c) {
+      return {
+        slug: c.slug,
+        title: c.title,
+        year: c.year,
+        poster: c.poster,
+        kind: c.kind,
+        role: c.role || ""
+      };
+    });
+  }
+
   function getPerson(slug) {
-    return FALLBACK[slug] || null;
+    if (!slug) return null;
+    var key = normalizeSlugToken(slug) || slugify(slug) || "";
+    if (!key) return null;
+    var index = ensureIndex();
+    var entry = index[key];
+    var curated = FALLBACK[key] || null;
+    if (!curated && !entry) return null;
+    var person = curated
+      ? Object.assign({}, curated)
+      : {
+          slug: key,
+          name: (entry && entry.name) || key,
+          photo: (entry && entry.photo) || PLACEHOLDER,
+          biography: "",
+          birthday: "",
+          placeOfBirth: "",
+          knownFor: []
+        };
+    person.slug = person.slug || key;
+    if ((!person.photo || person.photo === PLACEHOLDER) && entry && entry.photo) {
+      person.photo = entry.photo;
+    }
+    if (!person.photo) person.photo = PLACEHOLDER;
+    person.credits = mergeKnownFor(person, cloneCredits(entry));
+    if (!person.biography) person.biography = biographyFromCredits(person);
+    return person;
   }
 
   function findPersonByName(name) {
-    var s = slugify(name);
-    return FALLBACK[s] || null;
+    return getPerson(slugify(name));
+  }
+
+  function listCatalogPeople() {
+    var index = ensureIndex();
+    var seen = {};
+    var people = [];
+    function push(slug) {
+      if (!slug || seen[slug]) return;
+      var probe = getPerson(slug);
+      if (!probe) return;
+      var canonical = slugify(probe.name) || probe.slug || slug;
+      if (seen[canonical]) return;
+      seen[canonical] = true;
+      seen[slug] = true;
+      var person = canonical === slug ? probe : getPerson(canonical) || probe;
+      if (person.slug !== canonical) person.slug = canonical;
+      people.push(person);
+    }
+    Object.keys(index).forEach(push);
+    Object.keys(FALLBACK).forEach(push);
+    people.sort(function (a, b) {
+      return String(a.name || "").localeCompare(String(b.name || ""));
+    });
+    return people;
   }
 
   var R = global.ReelIndex || (global.ReelIndex = {});
@@ -188,5 +556,10 @@
   R.slugify = slugify;
   R.getPerson = getPerson;
   R.findPersonByName = findPersonByName;
+  R.listCatalogPeople = listCatalogPeople;
+  R.creditsForPerson = function (slug) {
+    var person = getPerson(slug);
+    return (person && person.credits) || [];
+  };
   R.PERSON_PLACEHOLDER = PLACEHOLDER;
 })(typeof window !== "undefined" ? window : globalThis);
