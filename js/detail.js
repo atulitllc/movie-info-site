@@ -15,9 +15,7 @@
     return Math.floor(mins / 60) + "h " + (mins % 60) + "m";
   }
 
-  function personLink(name) {
-    if (!name) return "—";
-    const people = ReelIndex.PEOPLE || {};
+  function slugifyName(name) {
     const slugify =
       ReelIndex.slugify ||
       function (n) {
@@ -29,13 +27,61 @@
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "");
       };
-    const s = slugify(name);
-    if (people[s]) {
+    return slugify(name || "");
+  }
+
+  function personRecord(slug) {
+    if (!slug || !ReelIndex.getPerson) return null;
+    return ReelIndex.getPerson(slug);
+  }
+
+  function personHref(name, explicitSlug) {
+    var label = name;
+    var explicit = explicitSlug || "";
+    if (name && typeof name === "object") {
+      label = name.name || name.actor || name.person || "";
+      explicit = explicit || name.slug || name.personSlug || "";
+    }
+    function safeSlug(slug) {
+      return slug && /^[a-z0-9-]+$/.test(slug) ? slug : "";
+    }
+    var byName = safeSlug(slugifyName(label));
+    if (byName && personRecord(byName)) return "../../people/" + byName + "/";
+    var token = safeSlug(explicit ? String(explicit).split("/").filter(Boolean).pop() : "");
+    if (token && personRecord(token)) return "../../people/" + token + "/";
+    return "";
+  }
+
+  function personLink(name) {
+    var label = name;
+    if (name && typeof name === "object") {
+      label = name.name || name.actor || name.person || "";
+    }
+    if (!label) return "—";
+    var href = personHref(name);
+    if (href) {
       return (
-        '<a class="person-link" href="../../people/' + s + '/">' + name + "</a>"
+        '<a class="person-link" href="' + href + '">' + escapeHtml(label) + "</a>"
       );
     }
-    return name;
+    return escapeHtml(label);
+  }
+
+  function castEntries(list) {
+    return (list || [])
+      .map(function (p) {
+        if (typeof p === "string") return { name: p, character: "", photo: "", slug: "" };
+        if (!p || typeof p !== "object") return null;
+        return {
+          name: p.name || p.actor || p.person || "",
+          character: p.character || p.role || "",
+          photo: p.photo || p.profile || p.image || "",
+          slug: p.slug || p.personSlug || ""
+        };
+      })
+      .filter(function (p) {
+        return p && p.name;
+      });
   }
 
   function glanceWatchProviders() {
@@ -146,40 +192,28 @@
         "</span></div></div>";
     }
 
-    var cast = (movie.cast || []).slice(0, 4);
+    var cast = castEntries(movie.cast).slice(0, 4);
     var castHtml = "";
     if (cast.length) {
-      var people = ReelIndex.PEOPLE || {};
-      var slugify =
-        ReelIndex.slugify ||
-        function (n) {
-          return String(n)
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .replace(/['\u2019]/g, "")
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-+|-+$/g, "");
-        };
       castHtml =
         '<div class="glance-block"><p class="glance-block-label">Key cast</p><div class="glance-cast">' +
         cast
           .map(function (p) {
-            var s = slugify(p.name);
             var initial = (p.name || "?").charAt(0).toUpperCase();
             var photo = p.photo
               ? '<img class="glance-cast-dot" src="' +
-                p.photo +
+                escapeHtml(p.photo) +
                 '" alt="" width="22" height="22" loading="lazy" />'
               : '<span class="glance-cast-dot" aria-hidden="true">' +
-                initial +
+                escapeHtml(initial) +
                 "</span>";
             var label = escapeHtml(p.name || "");
-            if (people[s]) {
+            var href = personHref(p.name, p.slug);
+            if (href) {
               return (
-                '<a class="glance-cast-chip" href="../../people/' +
-                s +
-                '/">' +
+                '<a class="glance-cast-chip" href="' +
+                href +
+                '">' +
                 photo +
                 label +
                 "</a>"
@@ -531,49 +565,32 @@
   }
 
   function castCardHtml(p) {
-    const people = ReelIndex.PEOPLE || {};
-    const slugify =
-      ReelIndex.slugify ||
-      function (n) {
-        return String(n)
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .replace(/['\u2019]/g, "")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "");
-      };
-    const s = slugify(p.name);
-    const hasPerson = !!people[s];
     const initial = (p.name || "?").charAt(0).toUpperCase();
-    const photo =
-      p.photo ||
-      ("data:image/svg+xml," +
-        encodeURIComponent(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#1a1f2b" width="100%" height="100%"/><text x="50%" y="54%" fill="#e8b86d" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="32" font-weight="700">' +
-            initial +
-            "</text></svg>"
-        ));
-    const inner =
-      '<img class="cast-photo" src="' +
-      photo +
-      '" alt="" width="90" height="90" loading="lazy" onerror="this.onerror=null;this.src=\'data:image/svg+xml,' +
+    const fallbackSvg =
+      "data:image/svg+xml," +
       encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#1a1f2b" width="100%" height="100%"/><text x="50%" y="54%" fill="#e8b86d" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="32">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="#1a1f2b" width="100%" height="100%"/><text x="50%" y="54%" fill="#e8b86d" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="32" font-weight="700">' +
           initial +
           "</text></svg>"
-      ) +
+      );
+    const photo = p.photo || fallbackSvg;
+    const href = personHref(p.name, p.slug);
+    const inner =
+      '<img class="cast-photo" src="' +
+      escapeHtml(photo) +
+      '" alt="" width="90" height="90" loading="lazy" onerror="this.onerror=null;this.src=\'' +
+      fallbackSvg +
       '\'" />' +
       '<div class="cast-meta"><div class="name">' +
-      p.name +
+      escapeHtml(p.name) +
       '</div><div class="role">' +
-      (p.character || "—") +
+      escapeHtml(p.character || "—") +
       "</div></div>";
-    if (hasPerson) {
+    if (href) {
       return (
-        '<a class="cast-card cast-card-link" href="../../people/' +
-        s +
-        '/">' +
+        '<a class="cast-card cast-card-link" href="' +
+        href +
+        '">' +
         inner +
         "</a>"
       );
@@ -583,7 +600,7 @@
 
   const cast = document.getElementById("cast");
   if (cast) {
-    var castHtml = (movie.cast || []).map(castCardHtml).join("");
+    var castHtml = castEntries(movie.cast).map(castCardHtml).join("");
     cast.innerHTML = castHtml;
     if (!castHtml && cast.parentElement) cast.parentElement.hidden = true;
   }

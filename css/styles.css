@@ -242,6 +242,7 @@ img.glance-cast-dot{display:block}
 .person-bio{color:var(--text);max-width:62ch;margin:0;opacity:.92}
 .person-known-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
 .person-movie-card{display:block}
+.person-movie-card .card-meta{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .person-movie-placeholder{background:var(--panel2);aspect-ratio:2/3}
 
 @media (max-width:820px){
