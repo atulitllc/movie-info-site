@@ -1,5 +1,5 @@
 /**
- * Create /people/<slug>/ shells for everyone credited in the curated or bulk catalog.
+ * Create /people/<slug>/ shells for everyone credited in curated data and data/catalog.json.
  * Existing curated pages are kept; this only adds series-data.js and the filmography heading.
  * Filmography itself is filled at runtime by js/person.js — do not hardcode TMDB person ids.
  *
@@ -14,6 +14,21 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const peopleDir = path.join(root, "people");
 const siteBase = "https://wheretowatchfree.com";
 
+function mergeBulkCatalog(R) {
+  const catalogPath = path.join(root, "data", "catalog.json");
+  if (!fs.existsSync(catalogPath)) return;
+  const data = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
+  R.MOVIES = R.MOVIES || {};
+  R.SERIES = R.SERIES || {};
+  // Curated records already on MOVIES/SERIES win (same rule as catalog-loader.js).
+  for (const item of data.movies || []) {
+    if (item && item.slug && !R.MOVIES[item.slug]) R.MOVIES[item.slug] = item;
+  }
+  for (const item of data.series || []) {
+    if (item && item.slug && !R.SERIES[item.slug]) R.SERIES[item.slug] = item;
+  }
+}
+
 function loadCatalog() {
   const ctx = {};
   ctx.window = ctx;
@@ -22,6 +37,7 @@ function loadCatalog() {
   for (const file of ["js/data.js", "js/series-data.js", "js/people-data.js"]) {
     runInContext(fs.readFileSync(path.join(root, file), "utf8"), sandbox, { filename: file });
   }
+  mergeBulkCatalog(ctx.ReelIndex);
   return ctx.ReelIndex;
 }
 
@@ -125,6 +141,7 @@ function pageHtml(person) {
   <footer class="site-footer"></footer>
   <script src="../../js/data.js"></script>
   <script src="../../js/series-data.js"></script>
+  <script src="../../js/catalog-loader.js"></script>
   <script src="../../js/people-data.js"></script>
   <script src="../../js/theme.js"></script>
   <script src="../../js/footer.js"></script>
@@ -141,6 +158,18 @@ function patchExisting(html) {
       '<script src="../../js/data.js"></script>\n  <script src="../../js/people-data.js"></script>',
       '<script src="../../js/data.js"></script>\n  <script src="../../js/series-data.js"></script>\n  <script src="../../js/people-data.js"></script>'
     );
+  }
+  if (!next.includes("js/catalog-loader.js")) {
+    next = next.replace(
+      '<script src="../../js/series-data.js"></script>\n  <script src="../../js/people-data.js"></script>',
+      '<script src="../../js/series-data.js"></script>\n  <script src="../../js/catalog-loader.js"></script>\n  <script src="../../js/people-data.js"></script>'
+    );
+    if (!next.includes("js/catalog-loader.js")) {
+      next = next.replace(
+        '<script src="../../js/data.js"></script>\n  <script src="../../js/people-data.js"></script>',
+        '<script src="../../js/data.js"></script>\n  <script src="../../js/catalog-loader.js"></script>\n  <script src="../../js/people-data.js"></script>'
+      );
+    }
   }
   next = next.replace("<h2>Known for</h2>", "<h2>Movies &amp; series</h2>");
   return next;
