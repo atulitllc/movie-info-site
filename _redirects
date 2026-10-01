@@ -1,0 +1,5 @@
+# Shared person profile shell — one HTML file for all /people/{slug}/ URLs.
+# Browser URL stays /people/{slug}/; person.js reads the slug from the path.
+# Curated bios still come from js/people-data.js at runtime.
+/people/:slug/  /people/_profile/index.html  200
+/people/:slug   /people/_profile/index.html  200

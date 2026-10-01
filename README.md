@@ -23,7 +23,7 @@ SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail page
 - `movies/<slug>/` — per-title SEO pages
 - `series/` + `series/<slug>/` — TV & web series
 - `whats-on/` — curated movie + series rows
-- `people/<slug>/` — person pages. Curated bios stay hand-written; other credited people get a shell from `node scripts/build-people-pages.mjs`. Filmography is filled in the browser from the movie and series catalogs.
+- `people/_profile/` — shared person page shell. Cloudflare Pages `_redirects` rewrites `/people/:slug/` → that shell (200). `person.js` reads the slug from the URL; curated bios still come from `js/people-data.js`. Run `node scripts/build-people-pages.mjs` to refresh the shell and sitemap people URLs (does **not** mass-generate per-slug files).
 - `js/data.js` — movie catalog (`window.ReelIndex` API namespace retained)
 - `js/series-data.js` — series catalog
 - `js/people-data.js` — people catalog
