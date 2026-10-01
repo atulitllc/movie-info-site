@@ -9,19 +9,19 @@
   ReelIndex.TRENDING_SLUGS = [
     { slug: "the-odyssey", type: "theater" },
     { slug: "stranger-things", type: "series" },
+    { slug: "barbie", type: "movie" },
     { slug: "dune-part-two", type: "theater" },
     { slug: "the-last-of-us", type: "series" },
+    { slug: "spider-man-across-the-spider-verse", type: "movie" },
     { slug: "oppenheimer", type: "theater" },
     { slug: "severance", type: "series" },
     { slug: "avatar-the-way-of-water", type: "theater" },
     { slug: "arcane", type: "series" },
     { slug: "the-boys", type: "series" },
-    { slug: "barbie", type: "movie" },
     { slug: "wednesday", type: "series" },
-    { slug: "spider-man-across-the-spider-verse", type: "movie" },
+    { slug: "interstellar", type: "movie" },
     { slug: "squid-game", type: "series" },
     { slug: "house-of-the-dragon", type: "series" },
-    { slug: "interstellar", type: "movie" },
     { slug: "the-bear", type: "series" }
   ];
 
