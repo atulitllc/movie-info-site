@@ -186,10 +186,21 @@
           .join("") +
         "</div></div>";
     } else if (movie.director) {
+      var directorNames = String(movie.director)
+        .split(/\s*,\s*/)
+        .map(function (name) { return name.trim(); })
+        .filter(Boolean)
+        .slice(0, 3);
       directorHtml =
-        '<div class="glance-block"><p class="glance-block-label">Director</p><div class="glance-chips"><span class="glance-chip accent">' +
-        personLink(movie.director) +
-        "</span></div></div>";
+        '<div class="glance-block"><p class="glance-block-label">' +
+        (directorNames.length > 1 ? "Directors" : "Director") +
+        '</p><div class="glance-chips">' +
+        directorNames
+          .map(function (name) {
+            return '<span class="glance-chip accent">' + personLink(name) + "</span>";
+          })
+          .join("") +
+        "</div></div>";
     }
 
     var cast = castEntries(movie.cast).slice(0, 4);
@@ -658,10 +669,14 @@
   if (crew) {
     if (isSeries) {
       const creators = (movie.creators || []).map(personLink).join(", ") || "—";
+      const seriesProducers = (movie.producers || []).map(personLink).join(", ");
       crew.innerHTML =
         "<p><strong>Creators:</strong> " +
         creators +
         "</p>" +
+        (seriesProducers
+          ? "<p><strong>Producers:</strong> " + seriesProducers + "</p>"
+          : "") +
         "<p><strong>Network:</strong> " +
         (movie.network || "—") +
         "</p>" +
@@ -679,9 +694,12 @@
     } else {
       const writers = (movie.writers || []).map(personLink).join(", ") || "—";
       const producers = (movie.producers || []).map(personLink).join(", ") || "—";
+      const directorNames = movie.director
+        ? String(movie.director).split(/\s*,\s*/).map(function (name) { return name.trim(); }).filter(Boolean)
+        : [];
       crew.innerHTML =
         "<p><strong>Director:</strong> " +
-        personLink(movie.director) +
+        (directorNames.map(personLink).join(", ") || "—") +
         "</p>" +
         "<p><strong>Writers:</strong> " +
         writers +
@@ -690,7 +708,9 @@
         producers +
         "</p>" +
         "<p><strong>Executive Producer:</strong> " +
-        personLink(movie.executiveProducer) +
+        (movie.executiveProducer
+          ? String(movie.executiveProducer).split(/\s*,\s*/).map(personLink).join(", ")
+          : "—") +
         "</p>";
     }
   }

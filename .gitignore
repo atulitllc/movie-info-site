@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+data/.tmdb-backfill-cache.json
+data/*.tmp

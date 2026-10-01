@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-"""One-shot static directory from IMDb public datasets.
+"""Build and enrich the static WhereToWatchFree directory.
 
-Reads title.basics.tsv.gz and title.ratings.tsv.gz (already downloaded or
-from https://datasets.imdbws.com/) and writes data/catalog.json plus
-movies/<slug>/ and series/<slug>/ shells for titles that do not already
-have a curated page.
+TMDB metadata backfill reads TMDB_API_KEY or TMDB_READ_ACCESS_TOKEN from the
+environment and fills bulk cast, directors, producers, and US watch providers.
+It does not scrape IMDb and does not edit curated js/data.js or js/series-data.js.
 
-No TMDB or OMDb API key. Release dates are year-precision (YYYY-01-01).
-Poster and backdrop URLs are static MetaHub images keyed by IMDb id:
+    TMDB_API_KEY=… python scripts/build-catalog.py
+
+--from-imdb reads title.basics.tsv.gz and title.ratings.tsv.gz (already
+downloaded or from https://datasets.imdbws.com/) and writes data/catalog.json
+plus movies/<slug>/ and series/<slug>/ shells for titles that do not already
+have a curated page. That path does not call TMDB. Release dates from the
+datasets are year-precision (YYYY-01-01). Poster and backdrop URLs are static
+MetaHub images keyed by IMDb id:
+
   https://images.metahub.space/poster/medium/{imdbId}/img
   https://images.metahub.space/background/medium/{imdbId}/img
+
+--backfill-posters fills empty artwork on the committed catalog without a key.
 """
 from __future__ import annotations
 
@@ -206,11 +214,13 @@ def assign_slugs(rows, media, reserved_years, used):
         if media == "series":
             rec["firstAirDate"] = year + "-01-01"
             rec["kind"] = "series"
+            # Empty until TMDB backfill. Curated series in js/series-data.js are separate.
             rec["creators"] = []
         else:
             rec["releaseDate"] = year + "-01-01"
             if row["runtime"]:
                 rec["runtime"] = row["runtime"]
+            # Empty until TMDB backfill. Do not hardcode crew here.
             rec["director"] = ""
         out.append(rec)
     return out
@@ -488,7 +498,21 @@ def main():
 
 
 if __name__ == "__main__":
-    if "--backfill-posters" in sys.argv:
+    argv = sys.argv[1:]
+    if "--backfill-posters" in argv:
         backfill_committed_catalog()
-    else:
+    elif "--from-imdb" in argv:
         main()
+    else:
+        import tmdb_backfill
+
+        api_key, token = tmdb_backfill.credentials()
+        if api_key or token or "--backfill-tmdb" in argv:
+            tmdb_backfill.backfill_catalog(ROOT)
+        else:
+            raise SystemExit(
+                "Missing TMDB credentials. Set TMDB_API_KEY or TMDB_READ_ACCESS_TOKEN.\n"
+                "Run: TMDB_API_KEY=… python scripts/build-catalog.py\n"
+                "Other modes: --backfill-posters (MetaHub artwork, no key), "
+                "--from-imdb (local IMDb dataset dumps; does not call TMDB)."
+            )
