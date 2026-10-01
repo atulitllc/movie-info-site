@@ -31,6 +31,7 @@
             '<ul>' +
               '<li><a href="' + prefix + '">Home</a></li>' +
               '<li><a href="' + prefix + 'whats-on/">What&rsquo;s On</a></li>' +
+              '<li><a href="' + prefix + 'trending/">Trending</a></li>' +
               '<li><a href="' + prefix + 'series/">Series</a></li>' +
               '<li><a href="' + prefix + 'watch-free/">Watch free</a></li>' +
               '<li><a href="' + prefix + '#movie-grid">Movies</a></li>' +

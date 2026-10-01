@@ -87,34 +87,14 @@
 
   var catalog = all();
 
-  // Trending: mix recent-ish high scores + popular series
-  var trending = catalog
-    .slice()
-    .sort(function (a, b) {
+  // Trending: shared curated mix (see trending-data.js), fallback to top scores
+  var trending;
+  if (ReelIndex.listTrending) {
+    trending = ReelIndex.listTrending("../").slice(0, 10);
+  } else {
+    trending = catalog.slice().sort(function (a, b) {
       return sortScore(a, b) || sortDate(a, b);
-    })
-    .slice(0, 10);
-
-  // Prefer a hand-picked mix for prototype polish
-  var trendingSlugs = [
-    "the-odyssey",
-    "stranger-things",
-    "the-last-of-us",
-    "dune-part-two",
-    "severance",
-    "arcane",
-    "oppenheimer",
-    "the-boys",
-    "wednesday",
-    "squid-game"
-  ];
-  var bySlug = {};
-  catalog.forEach(function (i) {
-    bySlug[i.slug] = i;
-  });
-  trending = trendingSlugs.map(function (s) { return bySlug[s]; }).filter(Boolean);
-  if (trending.length < 8) {
-    trending = catalog.slice().sort(sortScore).slice(0, 10);
+    }).slice(0, 10);
   }
 
   var freeList = catalog.filter(hasFree).sort(sortScore).slice(0, 12);
