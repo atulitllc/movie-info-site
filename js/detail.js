@@ -32,6 +32,177 @@
     return name;
   }
 
+  function glanceWatchProviders() {
+    var watch = movie.watch;
+    var list = [];
+    if (Array.isArray(watch)) {
+      list = watch.slice(0, 6);
+    } else if (watch && typeof watch === "object") {
+      list = []
+        .concat(watch.paid || [])
+        .concat(watch.free || [])
+        .slice(0, 6);
+    }
+    return list.filter(function (p) {
+      return p && (p.id || p.label);
+    });
+  }
+
+  function glanceLogo(p) {
+    var icon = PROVIDER_ICONS[p.id];
+    if (icon) {
+      return (
+        '<img class="glance-watch-logo" src="https://cdn.simpleicons.org/' +
+        icon +
+        '" alt="' +
+        escapeHtml(p.label || p.id) +
+        '" width="30" height="30" loading="lazy" title="' +
+        escapeHtml(p.label || p.id) +
+        '" />'
+      );
+    }
+    var label = (p.label || p.id || "?").charAt(0).toUpperCase();
+    return (
+      '<span class="glance-watch-fallback" title="' +
+      escapeHtml(p.label || p.id || "") +
+      '" aria-hidden="true">' +
+      label +
+      "</span>"
+    );
+  }
+
+  function buildGlancePanel() {
+    var stats = [];
+    if (movie.year) {
+      stats.push({ label: "Year", value: String(movie.year) });
+    }
+    if (movie.runtime) {
+      stats.push({ label: "Runtime", value: hoursMinutes(movie.runtime) });
+    }
+    if (movie.rating) {
+      stats.push({ label: "Rated", value: String(movie.rating) });
+    }
+    if (movie.voteAverage != null && !isNaN(Number(movie.voteAverage))) {
+      stats.push({
+        label: "Score",
+        value: Math.round(Number(movie.voteAverage) * 10) + "%"
+      });
+    }
+
+    var statsHtml =
+      '<div class="glance-stats">' +
+      stats
+        .map(function (s) {
+          return (
+            '<div class="glance-stat"><span class="glance-stat-label">' +
+            escapeHtml(s.label) +
+            '</span><span class="glance-stat-value">' +
+            escapeHtml(s.value) +
+            "</span></div>"
+          );
+        })
+        .join("") +
+      "</div>";
+
+    var genres = (movie.genres || []).slice(0, 5);
+    var genresHtml = genres.length
+      ? '<div class="glance-block"><p class="glance-block-label">Genres</p><div class="glance-chips">' +
+        genres
+          .map(function (g) {
+            return '<span class="glance-chip">' + escapeHtml(g) + "</span>";
+          })
+          .join("") +
+        "</div></div>"
+      : "";
+
+    var directorHtml = movie.director
+      ? '<div class="glance-block"><p class="glance-block-label">Director</p><div class="glance-chips"><span class="glance-chip accent">' +
+        personLink(movie.director) +
+        "</span></div></div>"
+      : "";
+
+    var cast = (movie.cast || []).slice(0, 4);
+    var castHtml = "";
+    if (cast.length) {
+      var people = ReelIndex.PEOPLE || {};
+      var slugify =
+        ReelIndex.slugify ||
+        function (n) {
+          return String(n)
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/['\u2019]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        };
+      castHtml =
+        '<div class="glance-block"><p class="glance-block-label">Key cast</p><div class="glance-cast">' +
+        cast
+          .map(function (p) {
+            var s = slugify(p.name);
+            var initial = (p.name || "?").charAt(0).toUpperCase();
+            var photo = p.photo
+              ? '<img class="glance-cast-dot" src="' +
+                p.photo +
+                '" alt="" width="22" height="22" loading="lazy" />'
+              : '<span class="glance-cast-dot" aria-hidden="true">' +
+                initial +
+                "</span>";
+            var label = escapeHtml(p.name || "");
+            if (people[s]) {
+              return (
+                '<a class="glance-cast-chip" href="../../people/' +
+                s +
+                '/">' +
+                photo +
+                label +
+                "</a>"
+              );
+            }
+            return (
+              '<span class="glance-cast-chip">' + photo + label + "</span>"
+            );
+          })
+          .join("") +
+        "</div></div>";
+    }
+
+    var providers = glanceWatchProviders();
+    var watchHtml = providers.length
+      ? '<div class="glance-block"><p class="glance-block-label">Watch on</p><div class="glance-watch" aria-label="Streaming providers">' +
+        providers
+          .map(function (p) {
+            var logo = glanceLogo(p);
+            if (p.href) {
+              return (
+                '<a href="' +
+                p.href +
+                '" target="_blank" rel="noopener" title="' +
+                escapeHtml(p.label || p.id) +
+                '">' +
+                logo +
+                "</a>"
+              );
+            }
+            return logo;
+          })
+          .join("") +
+        "</div></div>"
+      : "";
+
+    return (
+      '<aside class="trailer-glance" aria-label="At a glance">' +
+      '<p class="trailer-glance-title">At a glance</p>' +
+      statsHtml +
+      genresHtml +
+      directorHtml +
+      castHtml +
+      watchHtml +
+      "</aside>"
+    );
+  }
+
   function showTrailer(youtubeId) {
     const section = document.getElementById("trailer-section");
     const wrap = document.getElementById("trailer");
@@ -39,12 +210,19 @@
       if (section) section.hidden = true;
       return;
     }
+    var heading = section.querySelector("h2");
+    if (heading) heading.textContent = "Trailer";
     wrap.innerHTML =
+      '<div class="trailer-layout">' +
+      buildGlancePanel() +
+      '<div class="trailer-player">' +
+      '<p class="trailer-player-label">Official trailer</p>' +
       '<div class="trailer-frame"><div class="trailer-wrap"><iframe src="https://www.youtube-nocookie.com/embed/' +
       encodeURIComponent(youtubeId) +
       '" title="' +
-      (movie.title || "Trailer") +
-      ' trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div></div>';
+      escapeHtml(movie.title || "Trailer") +
+      ' trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div></div>' +
+      "</div></div>";
     section.hidden = false;
   }
 
