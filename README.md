@@ -2,7 +2,7 @@
 
 SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail pages, cast, trailers, where-to-watch, TV/web series, What’s On hubs, related titles, person pages, and light/dark theme.
 
-**Brand:** WhereToWatchFree (aperture mark — navy / paper / amber). Prototype name ReelIndex is retired for customer-facing brand.
+**Brand:** WhereToWatchFree — locked Clapperboard mark and condensed Barlow wordmark (navy `#0B1C2C`, paper `#F4F0E6`, coral `#FF6B4A`, amber hinge `#F5A524`). `window.ReelIndex` remains the script namespace only.
 
 **Live:** https://atulitllc.github.io/movie-info-site/
 
@@ -14,8 +14,8 @@ SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail page
 - Full-bleed cinematic detail heroes (poster overlay, score ring, horizontal cast scroller)
 - Light/dark mode toggle (persisted as `theme=light|dark` in `localStorage`; default dark)
 - Person pages linked from cast/crew
-- Optional TMDB API key refresh for The Odyssey
-- Brand pack assets in `assets/brand/` (mark, lockups, favicons)
+- Static directory in `data/catalog.json` (IMDb public title/ratings dump; no client TMDB API key)
+- Brand pack in `assets/brand/` (Clapperboard mark, condensed lockups, favicons)
 
 ## Structure
 

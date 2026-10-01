@@ -1,4 +1,5 @@
 (function () {
+  function boot() {
   if (!window.ReelIndex) return;
 
   const FALLBACK_POSTER =
@@ -124,4 +125,8 @@
   fill("rail-free", freeList);
   fill("rail-new", newList);
   fill("rail-top", topList);
+  }
+  var pending = window.ReelIndex && ReelIndex.whenCatalog;
+  if (pending && typeof pending.then === "function") pending.then(boot);
+  else boot();
 })();

@@ -1,4 +1,5 @@
 (function () {
+  function boot() {
   if (!window.ReelIndex || !ReelIndex.listTrending) return;
 
   var FALLBACK_POSTER =
@@ -81,4 +82,8 @@
       })
       .join("");
   }
+  }
+  var pending = window.ReelIndex && ReelIndex.whenCatalog;
+  if (pending && typeof pending.then === "function") pending.then(boot);
+  else boot();
 })();

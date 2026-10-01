@@ -1,7 +1,17 @@
 (function () {
   const grid = document.getElementById("movie-grid");
   const search = document.getElementById("search");
-  const status = document.getElementById("status");
+  const status = document.getElementById("search-status");
+  const emptyBox = document.getElementById("search-empty");
+  const emptyTitle = document.getElementById("search-empty-title");
+  const movieHeading = document.getElementById("movie-heading");
+  const moreRow = document.getElementById("load-more-row");
+  const moreBtn = document.getElementById("load-more");
+  const rails = [
+    document.getElementById("trending-rail-section"),
+    document.getElementById("series-rail-section")
+  ];
+  function boot() {
   if (!window.ReelIndex) return;
 
   const FALLBACK_POSTER =
@@ -176,8 +186,7 @@
       "</h2>" +
       '<div class="card-meta">' +
       escapeHtml(m.year || "") +
-      " · " +
-      escapeHtml(m.rating || "") +
+      (m.rating ? " · " + escapeHtml(m.rating) : "") +
       " · ★ " +
       Number(m.voteAverage || 0).toFixed(1) +
       "</div>" +
@@ -185,10 +194,158 @@
     );
   }
 
-  function render(list) {
-    if (!grid) return;
-    grid.innerHTML =
-      list.map(card).join("") || '<p class="tagline">No movies match.</p>';
+  var PAGE = 48;
+  var pageCount = 1;
+  var query = "";
+
+  function moviesSorted() {
+    return allMovies().slice().sort(function (a, b) {
+      return String(b.releaseDate || b.year || "").localeCompare(
+        String(a.releaseDate || a.year || "")
+      );
+    });
+  }
+
+  function allTitles() {
+    var movies = allMovies().map(function (m) {
+      return Object.assign({ _kind: "movie" }, m);
+    });
+    var series = (ReelIndex.listSeries ? ReelIndex.listSeries() : []).map(function (s) {
+      return Object.assign({ _kind: "series" }, s);
+    });
+    return movies.concat(series);
+  }
+
+  function haystack(item) {
+    var theater =
+      item.inTheaters ||
+      (ReelIndex.hasTheatersWatch && ReelIndex.hasTheatersWatch(item));
+    return [
+      item.title,
+      item.year,
+      (item.genres || []).join(" "),
+      item._kind === "series" ? "series tv show" : "movie film",
+      theater ? "theaters theater" : ""
+    ]
+      .join(" ")
+      .toLowerCase();
+  }
+
+  function matches(item, tokens) {
+    var hay = haystack(item);
+    for (var i = 0; i < tokens.length; i++) {
+      if (hay.indexOf(tokens[i]) === -1) return false;
+    }
+    return true;
+  }
+
+  function resultCard(item) {
+    var isSeries = item._kind === "series";
+    var href = (isSeries ? "series/" : "movies/") + item.slug + "/";
+    var badge = ReelIndex.typeBadge
+      ? ReelIndex.typeBadge(item)
+      : {
+          label: isSeries ? "Series" : "Movie",
+          mod: isSeries ? "series" : "movie"
+        };
+    var poster = item.poster || FALLBACK_POSTER;
+    return (
+      '<a class="card" href="' +
+      href +
+      '">' +
+      '<span class="type-badge type-badge--' +
+      escapeHtml(badge.mod) +
+      '">' +
+      escapeHtml(badge.label) +
+      "</span>" +
+      '<img class="card-poster" src="' +
+      escapeHtml(poster) +
+      '" alt="' +
+      escapeHtml(item.title) +
+      ' poster" loading="lazy" width="300" height="450" onerror="this.onerror=null;this.src=\'' +
+      FALLBACK_POSTER +
+      '\'"/>' +
+      '<div class="card-body"><h2 class="card-title">' +
+      escapeHtml(item.title) +
+      "</h2><div class=\"card-meta\">" +
+      escapeHtml(item.year || "") +
+      " · ★ " +
+      Number(item.voteAverage || 0).toFixed(1) +
+      "</div></div></a>"
+    );
+  }
+
+  function setRailsHidden(hidden) {
+    rails.forEach(function (el) {
+      if (el) el.hidden = hidden;
+    });
+    if (movieHeading) movieHeading.hidden = hidden;
+  }
+
+  function renderBrowse() {
+    var list = moviesSorted();
+    var slice = list.slice(0, pageCount * PAGE);
+    setRailsHidden(false);
+    if (emptyBox) emptyBox.hidden = true;
+    if (status) {
+      status.hidden = false;
+      status.textContent =
+        "Showing " +
+        slice.length +
+        " of " +
+        list.length +
+        " movies. Search also covers series.";
+    }
+    if (grid) grid.innerHTML = slice.map(card).join("");
+    if (moreRow) moreRow.hidden = slice.length >= list.length;
+  }
+
+  function renderSearch(tokens) {
+    var hits = allTitles().filter(function (item) {
+      return matches(item, tokens);
+    });
+    hits.sort(function (a, b) {
+      return String(b.year || "").localeCompare(String(a.year || ""));
+    });
+    setRailsHidden(true);
+    if (moreRow) moreRow.hidden = true;
+    if (!hits.length) {
+      if (grid) grid.innerHTML = "";
+      if (status) {
+        status.hidden = false;
+        status.textContent = "No titles match “" + query + "”.";
+      }
+      if (emptyBox) {
+        emptyBox.hidden = false;
+        if (emptyTitle) emptyTitle.textContent = "No titles match “" + query + "”.";
+      }
+      return;
+    }
+    if (emptyBox) emptyBox.hidden = true;
+    var shown = hits.slice(0, 120);
+    if (status) {
+      status.hidden = false;
+      status.textContent =
+        shown.length === hits.length
+          ? hits.length +
+            (hits.length === 1 ? " title matches “" : " titles match “") +
+            query +
+            "”."
+          : "Showing " +
+            shown.length +
+            " of " +
+            hits.length +
+            " titles for “" +
+            query +
+            "”. Add a year or genre to narrow it.";
+    }
+    if (grid) grid.innerHTML = shown.map(resultCard).join("");
+  }
+
+  function render() {
+    var tokens = query ? query.split(/\s+/).filter(Boolean) : [];
+    if (!tokens.length) renderBrowse();
+    else renderSearch(tokens);
   }
 
   initHeroBanner();
@@ -230,53 +387,34 @@
     const list = ReelIndex.listSeries()
       .slice()
       .sort(function (a, b) {
+        var y = String(b.firstAirDate || b.year || "").localeCompare(
+          String(a.firstAirDate || a.year || "")
+        );
+        if (y) return y;
         return Number(b.voteAverage || 0) - Number(a.voteAverage || 0);
       })
-      .slice(0, 8);
+      .slice(0, 12);
     rail.innerHTML = list.map(seriesCard).join("");
   }
 
   renderSeriesRail();
 
-  if (grid) {
-    render(allMovies());
-    if (search) {
-      search.addEventListener("input", function () {
-        const q = search.value.trim().toLowerCase();
-        const all = allMovies();
-        render(
-          !q
-            ? all
-            : all.filter(function (m) {
-                return (m.title + m.year + (m.genres || []).join(" "))
-                  .toLowerCase()
-                  .includes(q);
-              })
-        );
-      });
-    }
-  }
-
-  const keyInput = document.getElementById("apiKey");
-  const loadBtn = document.getElementById("loadBtn");
-  if (keyInput && loadBtn && ReelIndex.TMDB) {
-    const saved = localStorage.getItem("tmdb_api_key");
-    if (saved) keyInput.value = saved;
-    loadBtn.addEventListener("click", async function () {
-      const key = keyInput.value.trim();
-      if (!key) {
-        status.textContent = "Enter an API key first.";
-        return;
-      }
-      localStorage.setItem("tmdb_api_key", key);
-      status.textContent = "Refreshing Odyssey from TMDB…";
-      try {
-        await ReelIndex.TMDB.refreshSlug("the-odyssey", key);
-        render(allMovies());
-        status.textContent = "Updated live TMDB data for Odyssey (session).";
-      } catch (e) {
-        status.textContent = "TMDB failed: " + (e.message || e);
-      }
+  render();
+  if (search) {
+    search.addEventListener("input", function () {
+      query = search.value.trim().toLowerCase();
+      pageCount = 1;
+      render();
     });
   }
+  if (moreBtn) {
+    moreBtn.addEventListener("click", function () {
+      pageCount += 1;
+      render();
+    });
+  }
+  }
+  var pending = window.ReelIndex && ReelIndex.whenCatalog;
+  if (pending && typeof pending.then === "function") pending.then(boot);
+  else boot();
 })();
