@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { clipMeta } from "./seo-text.mjs";
+import { filmographyMarkup } from "./person-filmography.mjs";
 import { renderSearchPage, searchTitles } from "../functions/search-render.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -47,13 +48,35 @@ assert.ok(overview.length > desc.length);
 
 const vin = fs.readFileSync(path.join(root, "people", "vin-diesel", "index.html"), "utf8");
 assert.match(vin, /name="robots" content="noindex, follow"/);
+assert.match(vin, /id="person-known-for"><\/div>/);
 const holland = fs.readFileSync(path.join(root, "people", "tom-holland", "index.html"), "utf8");
 assert.doesNotMatch(holland, /noindex/);
 assert.match(holland, /id="person-bio">[^<]+<\/p>/);
+assert.match(holland, /id="person-known-for"><a class="card person-movie-card"/);
+assert.match(holland, /href="\.\.\/\.\.\/movies\/the-odyssey\/"/);
+assert.match(holland, /href="\.\.\/\.\.\/series\/the-crowded-room\/"/);
+assert.match(holland, /Series/);
+
+const escaped = filmographyMarkup([
+  { slug: "a-title", title: 'A <Title> & "Quote"', year: "2020", kind: "movie", role: "Lead", poster: "" }
+]);
+assert.match(escaped, /A &lt;Title&gt; &amp; &quot;Quote&quot;/);
+assert.match(escaped, /person-movie-placeholder/);
+assert.equal(filmographyMarkup([]), '<p class="muted">No titles linked yet.</p>');
 
 const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
 assert.ok(!sitemap.includes("/people/vin-diesel/"));
 assert.ok(sitemap.includes("/people/tom-holland/"));
+const featured = [...sitemap.matchAll(/<loc>https:\/\/wheretowatchfree\.com\/people\/([a-z0-9-]+)\/<\/loc>/g)].map(function (match) {
+  return match[1];
+});
+assert.equal(featured.length, 11);
+for (const slug of featured) {
+  const page = fs.readFileSync(path.join(root, "people", slug, "index.html"), "utf8");
+  assert.doesNotMatch(page, /noindex/, slug);
+  assert.match(page, /id="person-known-for"><a class="card person-movie-card"/, slug);
+  assert.doesNotMatch(page, /Atulit/i, slug);
+}
 assert.ok(sitemap.includes("/search/"));
 assert.ok(sitemap.includes("/page/2/"));
 
