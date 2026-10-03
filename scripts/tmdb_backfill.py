@@ -38,6 +38,8 @@ from __future__ import annotations
 
 import argparse
 import html
+
+from seo_text import clip_meta
 import json
 import os
 import re
@@ -765,9 +767,27 @@ def patch_pages(root: Path, by_slug: dict, only: set[str], region: str) -> dict:
                 new_text = new_text.replace(ATTR_OLD, attr_new)
             overview = merged.get("overview") or ""
             if overview and overview_is_stub(page_rec.get("overview") or "") and not overview_is_stub(overview):
-                desc = overview[:155]
+                desc = clip_meta(overview)
                 new_text = _replace_meta(new_text, "name", "description", desc)
                 new_text = _replace_meta(new_text, "property", "og:description", desc)
+            if overview and "<p id=\"overview\"></p>" in new_text:
+                new_text = new_text.replace(
+                    "<p id=\"overview\"></p>",
+                    "<p id=\"overview\">" + html.escape(overview) + "</p>",
+                    1,
+                )
+            poster = merged.get("poster") or ""
+            title = merged.get("title") or "Title"
+            if 'id="poster"' in new_text and 'alt=""' in new_text:
+                alt = html.escape(title + " poster", quote=True)
+                new_text = new_text.replace('id="poster" alt=""', f'id="poster" alt="{alt}"', 1)
+                if poster and 'id="poster"' in new_text and 'src="' not in new_text.split('id="poster"', 1)[1][:80]:
+                    src = html.escape(poster, quote=True)
+                    new_text = new_text.replace(
+                        f'id="poster" alt="{alt}"',
+                        f'src="{src}" id="poster" alt="{alt}"',
+                        1,
+                    )
             if new_text != text:
                 index.write_text(new_text, encoding="utf-8")
                 updated += 1

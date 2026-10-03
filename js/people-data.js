@@ -3,8 +3,8 @@
  * Curated bios keyed by URL slug (ReelIndex.PEOPLE).
  * detail.js and person.js also resolve anyone credited in the movie catalog
  * (FALLBACK and MOVIES) or the series catalog, so bulk titles stay linked
- * without inventing TMDB person ids. Person URLs use the shared /people/_profile/
- * shell (Cloudflare Pages _redirects); curated bios below still win at runtime.
+ * without inventing TMDB person ids. Kept shells live at /people/<slug>/.
+ * A slug with no shell 404s. Curated bios below still win at runtime.
  */
 (function (global) {
   const IMG = "https://image.tmdb.org/t/p";

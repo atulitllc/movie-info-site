@@ -407,7 +407,7 @@
       render();
     });
   }
-  if (moreBtn) {
+  if (moreBtn && String(moreBtn.tagName).toLowerCase() !== "a") {
     moreBtn.addEventListener("click", function () {
       pageCount += 1;
       render();
