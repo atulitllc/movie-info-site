@@ -21,7 +21,7 @@
         '<div class="footer-brand">' +
           '<a class="footer-logo" href="' + prefix + '" aria-label="WhereToWatchFree">' +
             '<img class="logo-lockup logo-lockup--dark" src="' + prefix + 'assets/brand/lockup-horizontal-dark.svg" alt="WhereToWatchFree" width="155" height="36" decoding="async" />' +
-            '<img class="logo-lockup logo-lockup--light" src="' + prefix + 'assets/brand/lockup-horizontal-light.svg" alt="" width="155" height="36" decoding="async" />' +
+            '<img class="logo-lockup logo-lockup--light" src="' + prefix + 'assets/brand/lockup-horizontal-light.svg" alt="WhereToWatchFree" width="155" height="36" decoding="async" />' +
           "</a>" +
           '<p class="footer-tagline">Browse movies &amp; series. Find where to watch online — legally, including free-with-ads.</p>' +
           '<p class="footer-copy">&copy; ' + year + " WhereToWatchFree</p>" +

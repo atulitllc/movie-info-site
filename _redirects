@@ -1,5 +1,8 @@
-# Fallback for /people/{slug}/ when no static shell exists.
-# Existing people/<slug>/index.html assets win over these 200 rewrites on CF Pages.
-# person.js reads the slug from the browser URL path.
-/people/:slug/  /people/_profile/index.html  200
-/people/:slug   /people/_profile/index.html  200
+# Cloudflare Pages serves index.html with HTTP 200 for unknown paths when
+# /404.html is missing. /404.html turns that SPA fallback off.
+# Unknown /people/:slug/ must 404. Do not 200-rewrite them to a shared shell.
+# www → https://wheretowatchfree.com/ is functions/_middleware.js.
+# _redirects cannot match a hostname. If www is not on this Pages project,
+# add a Cloudflare Bulk Redirect as well (see the pull request).
+/page/1/   /   301
+/page/1    /   301

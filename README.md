@@ -23,7 +23,7 @@ SEO-friendly static movie/TV info site (GitHub Pages) with cinematic detail page
 - `movies/<slug>/` — per-title SEO pages
 - `series/` + `series/<slug>/` — TV & web series
 - `whats-on/` — curated movie + series rows
-- `people/` — HTML index of kept cast/crew pages; `people/<slug>/` static shells for the top ~17k people by catalog credit count (curated bios in `js/people-data.js` always kept); `people/_profile/` shared fallback via Cloudflare Pages `_redirects` for anyone without a shell. Run `node scripts/build-people-pages.mjs` to regenerate shells, index, and sitemap (sitemap lists only kept shells).
+- `people/` — HTML index of kept cast/crew pages; `people/<slug>/` static shells for the top ~17k people by catalog credit count (curated bios in `js/people-data.js` always kept). Shells that are only a name and a credit count are `noindex` and omitted from the sitemap. Unknown `/people/:slug/` URLs 404 (`/404.html` disables the Cloudflare Pages homepage fallback). Run `node scripts/build-people-pages.mjs` to regenerate shells, index, and sitemap.
 - `js/data.js` — movie catalog (`window.ReelIndex` API namespace retained)
 - `js/series-data.js` — series catalog
 - `js/people-data.js` — people catalog

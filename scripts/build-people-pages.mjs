@@ -32,6 +32,7 @@ const PROFILE_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, follow" />
   <title>Person — Movies &amp; Series | WhereToWatchFree</title>
   <meta name="description" content="Filmography and credits in the WhereToWatchFree catalog." />
   <link rel="canonical" href="${siteBase}/people/" />
@@ -139,7 +140,14 @@ function clip(s, max) {
   return (space > 40 ? cut.slice(0, space) : cut).trim() + "…";
 }
 
-function pageHtml(person) {
+function authoredBiography(reel, slug) {
+  const curated = reel.PEOPLE && reel.PEOPLE[slug];
+  return (curated && String(curated.biography || "").trim()) || "";
+}
+
+function pageHtml(person, options) {
+  const indexable = !!(options && options.indexable);
+  const authoredBio = (options && options.authoredBio) || "";
   const slug = person.slug;
   const name = person.name || slug;
   const url = siteBase + "/people/" + slug + "/";
@@ -163,7 +171,7 @@ function pageHtml(person) {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />${indexable ? "" : '\n  <meta name="robots" content="noindex, follow" />'}
   <title>${esc(name)} — Movies &amp; Series | WhereToWatchFree</title>
   <meta name="description" content="${esc(description)}" />
   <link rel="canonical" href="${esc(url)}" />
@@ -208,7 +216,7 @@ function pageHtml(person) {
           <span><strong>Born</strong> <span id="person-birthday">—</span></span>
           <span><strong>Place</strong> <span id="person-place">—</span></span>
         </div>
-        <p class="person-bio" id="person-bio"></p>
+        <p class="person-bio" id="person-bio">${indexable ? esc(authoredBio) : ""}</p>
       </div>
     </div>
   </header>
@@ -349,7 +357,7 @@ function writePeopleIndex(keptRows) {
     <article>
       <header class="section" style="padding-bottom:0">
         <h1>People</h1>
-        <p class="muted">${keptRows.length.toLocaleString("en-US")} cast and crew pages with filmography from the catalog. Cast links on title pages stay clickable; anyone without a dedicated shell uses the shared profile fallback.</p>
+        <p class="muted">${keptRows.length.toLocaleString("en-US")} cast and crew pages with filmography from the catalog. Cast links on title pages open these shells. A name without a shell has no page.</p>
       </header>
       <section class="section">
         <ul class="people-index-list" style="columns:2;gap:2rem;list-style:disc;padding-left:1.25rem">
@@ -367,7 +375,7 @@ ${links}
   fs.writeFileSync(indexFile, html);
 }
 
-function syncShells(keptRows) {
+function syncShells(keptRows, reel) {
   const keep = new Set(keptRows.map(function (r) {
     return r.person.slug;
   }));
@@ -402,7 +410,8 @@ function syncShells(keptRows) {
     const slug = row.person.slug;
     const dir = path.join(peopleDir, slug);
     const file = path.join(dir, "index.html");
-    const html = pageHtml(row.person);
+    const bio = authoredBiography(reel, slug);
+    const html = pageHtml(row.person, { indexable: !!bio, authoredBio: bio });
     const existed = fs.existsSync(file);
     fs.mkdirSync(dir, { recursive: true });
     if (existed) {
@@ -420,18 +429,20 @@ function syncShells(keptRows) {
   return { created, updated, removed };
 }
 
-function updateSitemap(keptSlugs) {
+function updateSitemap(entries) {
   const sitemapPath = path.join(root, "sitemap.xml");
   let xml = fs.readFileSync(sitemapPath, "utf8");
   xml = xml.replace(/\s*<url><loc>https:\/\/atulitllc\.github\.io\/movie-info-site\/people\/[^<]+<\/loc><\/url>/g, "");
   xml = xml.replace(/\s*<url><loc>https:\/\/wheretowatchfree\.com\/people\/[^<]*<\/loc><\/url>/g, "");
   const urls = [siteBase + "/people/"].concat(
-    keptSlugs
-      .slice()
-      .sort()
-      .filter(function (slug) {
-        return slug && slug !== "_profile" && /^[a-z0-9-]+$/.test(slug);
+    entries
+      .filter(function (entry) {
+        return entry && entry.indexable && entry.slug && entry.slug !== "_profile" && /^[a-z0-9-]+$/.test(entry.slug);
       })
+      .map(function (entry) {
+        return entry.slug;
+      })
+      .sort()
       .map(function (slug) {
         return siteBase + "/people/" + slug + "/";
       })
@@ -447,10 +458,13 @@ function updateSitemap(keptSlugs) {
 const reel = loadCatalog();
 const { kept, total, curatedCount } = selectPeople(reel);
 ensureProfileShell();
-const sync = syncShells(kept);
+const sync = syncShells(kept, reel);
 writePeopleIndex(kept);
 const sitemapCount = updateSitemap(kept.map(function (r) {
-  return r.person.slug;
+  return {
+    slug: r.person.slug,
+    indexable: !!authoredBiography(reel, r.person.slug)
+  };
 }));
 
 const minCredits = kept.reduce(function (m, r) {

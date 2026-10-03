@@ -30,6 +30,8 @@ import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
+from seo_text import clip_meta
+
 ROOT = Path(__file__).resolve().parents[1]
 IMDB = Path("/tmp/imdb")
 SITE = "https://wheretowatchfree.com"
@@ -284,7 +286,7 @@ PAGE = """<!DOCTYPE html>
   </header>
   <header class="detail-hero" id="detail-hero">
     <div class="container detail-grid">
-      <div class="poster-wrap"><img class="poster" id="poster" alt="" width="560" height="840" /></div>
+      <div class="poster-wrap"><img class="poster" id="poster"{poster_src} alt="{poster_alt}" width="560" height="840" /></div>
       <div>
         <h1 id="title">{title}</h1>
         <p class="tagline" id="tagline"></p>
@@ -302,7 +304,7 @@ PAGE = """<!DOCTYPE html>
   <main class="container detail-main">
     <article>
       <section class="section" id="trailer-section" hidden><h2>Trailer</h2><div id="trailer"></div></section>
-      <section class="section"><h2>Storyline</h2><p id="overview"></p></section>
+      <section class="section"><h2>Storyline</h2><p id="overview">{overview}</p></section>
       <section class="section" id="reviews-section" hidden><h2>Reviews</h2><div class="reviews-grid" id="reviews"></div></section>
       <section class="section"><h2>Top Billed Cast</h2><div class="cast-scroller" id="cast"></div></section>
       <section class="section"><h2>Details</h2><div id="crew"></div></section>
@@ -353,8 +355,12 @@ def write_pages(records, by_slug):
         page_rec = dict(rec)
         page_rec["relatedItems"] = related_items
         payload = json.dumps(page_rec, ensure_ascii=True, separators=(",", ":")).replace("<", "\\u003c")
-        desc = html.escape(rec["overview"][:155], quote=True)
+        desc = html.escape(clip_meta(rec.get("overview") or ""), quote=True)
         title = html.escape(rec["title"], quote=True)
+        poster = rec.get("poster") or ""
+        poster_src = f' src="{html.escape(poster, quote=True)}"' if poster else ""
+        poster_alt = html.escape((rec.get("title") or "Title") + " poster", quote=True)
+        overview_html = html.escape(rec.get("overview") or "")
         kind = "series" if rec["mediaType"] == "series" else "movies"
         canonical = f"{SITE}/{kind}/{rec['slug']}/"
         media = ' data-media="series"' if rec["mediaType"] == "series" else ""
@@ -367,6 +373,9 @@ def write_pages(records, by_slug):
             slug=html.escape(rec["slug"]),
             media=media,
             payload=payload,
+            poster_src=poster_src,
+            poster_alt=poster_alt,
+            overview=overview_html,
         ), encoding="utf-8")
         written += 1
     return written

@@ -51,8 +51,8 @@
     if (byName && personRecord(byName)) return "../../people/" + byName + "/";
     if (token && personRecord(token)) return "../../people/" + token + "/";
     // Bulk #title-json pages only run title-boot.js — they never load people-data.js,
-    // so getPerson is missing. Still link by slug so cast/crew stay clickable;
-    // top people have static shells; others fall back via _redirects → _profile.
+    // so getPerson is missing. Still link by slug so cast on a kept shell stays
+    // clickable. A slug with no shell 404s.
     if (byName) return "../../people/" + byName + "/";
     if (token) return "../../people/" + token + "/";
     return "";
