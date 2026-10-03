@@ -16,6 +16,7 @@ import fs from "fs";
 import path from "path";
 import { createContext, runInContext } from "vm";
 import { fileURLToPath } from "url";
+import { filmographyMarkup, mergeCatalogLikeBrowser } from "./person-filmography.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const peopleDir = path.join(root, "people");
@@ -102,14 +103,7 @@ function mergeBulkCatalog(R) {
   const catalogPath = path.join(root, "data", "catalog.json");
   if (!fs.existsSync(catalogPath)) return;
   const data = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
-  R.MOVIES = R.MOVIES || {};
-  R.SERIES = R.SERIES || {};
-  for (const item of data.movies || []) {
-    if (item && item.slug && !R.MOVIES[item.slug]) R.MOVIES[item.slug] = item;
-  }
-  for (const item of data.series || []) {
-    if (item && item.slug && !R.SERIES[item.slug]) R.SERIES[item.slug] = item;
-  }
+  mergeCatalogLikeBrowser(R, data);
 }
 
 function loadCatalog() {
@@ -156,6 +150,7 @@ function pageHtml(person, options) {
     160
   );
   const photo = typeof person.photo === "string" && person.photo.startsWith("https://") ? person.photo : "";
+  const filmography = indexable ? filmographyMarkup(person.credits) : "";
   const ld = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Person",
@@ -224,7 +219,7 @@ function pageHtml(person, options) {
     <article>
       <section class="section">
         <h2>Movies &amp; series</h2>
-        <div class="person-known-grid" id="person-known-for"></div>
+        <div class="person-known-grid" id="person-known-for">${filmography}</div>
       </section>
     </article>
   </main>
