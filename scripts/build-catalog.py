@@ -158,6 +158,22 @@ def pick(buckets, quotas):
     return chosen
 
 
+# Titles whose catalog row never received a real synopsis. Each line is that
+# title's own plot, so a later --from-imdb rebuild does not put the shared
+# directory sentence back. Keyed by IMDb id.
+AUTHORED_OVERVIEWS = {
+    "tt35890222": "A grieving man falls in love again, then learns she is the sister of his late girlfriend's killer as the dead woman returns as a ghost.",
+    "tt36150957": "Liam and Noel Gallagher reunite Oasis for Live '25 after fifteen years apart, from rehearsals through their first joint interview in years.",
+    "tt45643304": "Sagar hears the same song requested every night by people from Nemalipalem, a village that does not exist, and the requests expose a buried experiment.",
+    "tt10334530": "Novelist Vikram Adiga enters Gharga, the unmapped Land of Shadows, to find missing writer Mahabala Aithal after locals warn that nobody returns.",
+    "tt8272064": "While vacationing at a remote cabin, a young girl and her two fathers are ordered by armed strangers to sacrifice one of them to avert the apocalypse.",
+    "tt39291127": "After a rare Nizam-era coin is stolen from the Hyderabad Museum, thief Vijay joins a black-market chase and learns the coin is a fake.",
+    "tt13207736": "Between 1978 and 1991, Jeffrey Dahmer killed seventeen people while police and other institutions failed the victims and their communities.",
+    "tt14986406": "Yhwach and his Quincy army, the Wandenreich, declare war on the Soul Society, and Ichigo fights beside the Soul Reapers as both worlds are threatened.",
+    "tt38268282": "In 1890, paralyzed former jockey Johnny Joestar joins Gyro Zeppeli in the Steel Ball Run, a horse race from San Diego to New York.",
+}
+
+
 def assign_slugs(rows, media, reserved_years, used):
     out = []
     for row in rows:
@@ -176,7 +192,7 @@ def assign_slugs(rows, media, reserved_years, used):
         imdb = "https://www.imdb.com/title/" + row["imdbId"] + "/"
         genres = row["genres"]
         genre_bit = ", ".join(genres[:3]) if genres else ("series" if media == "series" else "film")
-        overview = (
+        overview = AUTHORED_OVERVIEWS.get(row["imdbId"]) or (
             row["title"]
             + " ("
             + year

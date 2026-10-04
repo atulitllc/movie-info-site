@@ -170,15 +170,37 @@ const thrones = fs.readFileSync(path.join(root, "series", "game-of-thrones", "in
 assert.equal(metaDesc(thrones), clipMeta(overviewText(thrones)));
 assert.doesNotMatch(metaDesc(thrones), /Tubi/);
 
-const knock = fs.readFileSync(path.join(root, "movies", "knock-at-the-cabin", "index.html"), "utf8");
-const knockOverview = overviewText(knock);
-assert.match(knockOverview, /WhereToWatchFree directory/);
-assert.equal(metaDesc(knock), clipMeta(knockOverview));
-assert.equal(jsonLd(knock).description, knockOverview);
-
-const monster = fs.readFileSync(path.join(root, "series", "monster-2022", "index.html"), "utf8");
-assert.match(overviewText(monster), /WhereToWatchFree directory/);
-assert.equal(metaDesc(monster), clipMeta(overviewText(monster)));
+const storyPages = [
+  ["movies", "100-days-love-story"],
+  ["movies", "don-t-look-back-in-anger"],
+  ["movies", "ee-paata-korinavaaru-nemalipaalem-nundi"],
+  ["movies", "gharga"],
+  ["movies", "knock-at-the-cabin"],
+  ["movies", "zamana"],
+  ["series", "monster-2022"],
+  ["series", "bleach-thousand-year-blood-war"],
+  ["series", "steel-ball-run-jojo-s-bizarre-adventure"],
+];
+const catalog = JSON.parse(fs.readFileSync(path.join(root, "data", "catalog.json"), "utf8"));
+const catalogBySlug = new Map();
+for (const rec of catalog.movies.concat(catalog.series)) catalogBySlug.set(rec.slug, rec);
+const storyOverviews = [];
+for (const [kind, slug] of storyPages) {
+  const html = fs.readFileSync(path.join(root, kind, slug, "index.html"), "utf8");
+  const overview = overviewText(html);
+  assert.doesNotMatch(overview, /WhereToWatchFree directory/);
+  assert.doesNotMatch(metaDesc(html), /WhereToWatchFree directory/);
+  assert.equal(metaDesc(html), overview);
+  assert.equal(metaDesc(html), clipMeta(overview));
+  const og = html.match(/<meta property="og:description" content="([^"]*)"/);
+  assert.equal(og[1], metaDesc(html));
+  assert.equal(jsonLd(html).description, overview);
+  const embedded = html.match(/<script type="application\/json" id="title-json">([\s\S]*?)<\/script>/);
+  assert.equal(JSON.parse(embedded[1]).overview, overview);
+  assert.equal(catalogBySlug.get(slug).overview, overview);
+  storyOverviews.push(overview);
+}
+assert.equal(new Set(storyOverviews).size, storyPages.length);
 
 const searchFile = fs.readFileSync(path.join(root, "search", "index.html"), "utf8");
 assert.match(searchFile, /name="robots" content="noindex, follow"/);
