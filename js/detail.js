@@ -636,6 +636,10 @@
     const section = document.getElementById("related-section");
     const grid = document.getElementById("related");
     if (!section || !grid) return;
+    if (grid.querySelector("a[href]")) {
+      section.hidden = false;
+      return;
+    }
     const list = (slugs || [])
       .map(function (s) {
         return s && s !== movie.slug ? resolveTitle(s) : null;

@@ -251,6 +251,93 @@ def link_related(records):
         rec["related"] = related
 
 
+def display_related(rec, by_slug, limit=4):
+    """Titles to link from this page. Authored related slugs win; otherwise same type and genre."""
+    items = []
+    seen = {rec["slug"]}
+    for slug in rec.get("related") or []:
+        other = by_slug.get(slug)
+        if not other or other["slug"] in seen:
+            continue
+        if other.get("mediaType") != rec.get("mediaType"):
+            continue
+        seen.add(other["slug"])
+        items.append(other)
+        if len(items) == limit:
+            return items
+    if items:
+        return items
+    genres = set(rec.get("genres") or [])
+    year = int(rec.get("year") or 0)
+    pool = []
+    for other in by_slug.values():
+        if other["slug"] in seen or other.get("mediaType") != rec.get("mediaType"):
+            continue
+        shared = 0 if genres.intersection(other.get("genres") or []) else 1
+        dy = abs(int(other.get("year") or 0) - year)
+        pool.append((shared, dy, other["slug"], other))
+    pool.sort()
+    for row in pool[:limit]:
+        items.append(row[3])
+    return items
+
+
+def related_markup(items):
+    if not items:
+        return (
+            '      <section class="section" id="related-section" hidden>\n'
+            "        <h2>You might also like</h2>\n"
+            '        <div class="related-grid" id="related"></div>\n'
+            "      </section>"
+        )
+    cards = []
+    for other in items:
+        kind = "series" if other.get("mediaType") == "series" else "movies"
+        href = f"../../{kind}/{other['slug']}/"
+        title = html.escape(other.get("title") or other["slug"])
+        year = html.escape(str(other.get("year") or ""))
+        poster = other.get("poster") or ""
+        img = ""
+        if poster:
+            alt = html.escape((other.get("title") or "Title") + " poster", quote=True)
+            img = (
+                f'<img class="card-poster" src="{html.escape(poster, quote=True)}" '
+                f'alt="{alt}" loading="lazy" width="300" height="450" />'
+            )
+        cards.append(
+            f'<a class="card related-card" href="{href}">{img}'
+            f'<div class="card-body"><div class="card-title">{title}</div>'
+            f'<div class="card-meta">{year}</div></div></a>'
+        )
+    inner = "\n".join(cards)
+    return (
+        '      <section class="section" id="related-section">\n'
+        "        <h2>You might also like</h2>\n"
+        '        <div class="related-grid" id="related">\n'
+        f"{inner}\n"
+        "        </div>\n"
+        "      </section>"
+    )
+
+
+def json_ld_markup(rec, canonical, overview):
+    text = " ".join((overview or "").split())
+    if not text:
+        return ""
+    kind = "TVSeries" if rec.get("mediaType") == "series" else "Movie"
+    data = {
+        "@context": "https://schema.org",
+        "@type": kind,
+        "name": rec.get("title") or rec["slug"],
+        "url": canonical,
+        "description": text,
+    }
+    if rec.get("poster"):
+        data["image"] = rec["poster"]
+    payload = json.dumps(data, ensure_ascii=True, indent=2).replace("<", "\\u003c")
+    return f'  <script type="application/ld+json">\n{payload}\n  </script>\n'
+
+
 PAGE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -264,7 +351,7 @@ PAGE = """<!DOCTYPE html>
   <meta property="og:url" content="{canonical}" />
   <script src="../../js/theme-boot.js"></script>
   <link rel="stylesheet" href="../../css/styles.css" />
-</head>
+{json_ld}</head>
 <body data-slug="{slug}"{media}>
   <header class="site-header">
     <div class="container nav">
@@ -313,10 +400,7 @@ PAGE = """<!DOCTYPE html>
         <p class="watch-intro" id="watch-intro"></p>
         <div class="watch" id="watch"></div>
       </section>
-      <section class="section" id="related-section" hidden>
-        <h2>You might also like</h2>
-        <div class="related-grid" id="related"></div>
-      </section>
+{related_html}
       <p class="tmdb-attr">Directory listing from public IMDb title and rating data. Not endorsed by IMDb. Poster art may be unavailable for this title.</p>
     </article>
   </main>
@@ -339,10 +423,7 @@ def write_pages(records, by_slug):
         if dest.exists():
             continue
         related_items = []
-        for slug in rec["related"]:
-            other = by_slug.get(slug)
-            if not other:
-                continue
+        for other in display_related(rec, by_slug):
             related_items.append({
                 "slug": other["slug"],
                 "mediaType": other["mediaType"],
@@ -376,6 +457,8 @@ def write_pages(records, by_slug):
             poster_src=poster_src,
             poster_alt=poster_alt,
             overview=overview_html,
+            json_ld=json_ld_markup(rec, canonical, rec.get("overview") or ""),
+            related_html=related_markup(display_related(rec, by_slug)),
         ), encoding="utf-8")
         written += 1
     return written

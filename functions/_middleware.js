@@ -1,16 +1,12 @@
 import titles from "./search-index.mjs";
 import { renderSearchPage } from "./search-render.mjs";
-
-const APEX = "wheretowatchfree.com";
+import { redirectTarget } from "./https-redirect.mjs";
 
 export async function onRequest(context) {
-  const url = new URL(context.request.url);
-  if (url.hostname.toLowerCase() === "www." + APEX) {
-    url.hostname = APEX;
-    url.protocol = "https:";
-    return Response.redirect(url.toString(), 301);
-  }
+  const target = redirectTarget(context.request.url, context.request.headers.get("CF-Visitor"));
+  if (target) return Response.redirect(target, 301);
 
+  const url = new URL(context.request.url);
   const path = url.pathname;
   const trimmed = (url.searchParams.get("q") || "").trim();
   const isSearch = path === "/search" || path === "/search/";
@@ -23,6 +19,7 @@ export async function onRequest(context) {
     headers: {
       "content-type": "text/html; charset=UTF-8",
       "cache-control": "public, max-age=0, must-revalidate",
+      "x-robots-tag": "noindex, follow",
     },
   });
 }

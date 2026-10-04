@@ -21,6 +21,8 @@
     var PAGE = 48;
     var pageCount = 1;
     var query = "";
+    var serverGrid = grid.innerHTML;
+    var serverStatus = status ? status.textContent : "";
 
     function escapeHtml(s) {
       return String(s == null ? "" : s)
@@ -98,19 +100,13 @@
         heading.textContent = "All series (" + list.length + ")";
       }
       if (!tokens.length) {
+        grid.innerHTML = serverGrid;
         if (status) {
           status.hidden = false;
-          status.textContent =
-            "Showing " +
-            Math.min(pageCount * PAGE, list.length) +
-            " of " +
-            list.length +
-            " series.";
+          status.textContent = serverStatus;
         }
         if (empty) empty.hidden = true;
-        var slice = filtered.slice(0, pageCount * PAGE);
-        grid.innerHTML = slice.map(card).join("");
-        if (moreRow) moreRow.hidden = slice.length >= filtered.length;
+        if (moreRow) moreRow.hidden = false;
         return;
       }
       if (moreRow) moreRow.hidden = true;
@@ -146,7 +142,7 @@
         render();
       });
     }
-    if (moreBtn) {
+    if (moreBtn && String(moreBtn.tagName || "").toUpperCase() !== "A") {
       moreBtn.addEventListener("click", function () {
         pageCount += 1;
         render();

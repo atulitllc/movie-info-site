@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { clipMeta } from "./seo-text.mjs";
 import { filmographyMarkup } from "./person-filmography.mjs";
 import { renderSearchPage, searchTitles } from "../functions/search-render.mjs";
+import { redirectTarget } from "../functions/https-redirect.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -27,6 +28,17 @@ assert.match(html, /href="\/movies\/inception\/"/);
 assert.match(html, /Inception/);
 assert.doesNotMatch(html, /Atulit/i);
 assert.match(html, /rel="canonical" href="https:\/\/wheretowatchfree\.com\/search\/\?q=inception"/);
+assert.match(html, /name="robots" content="noindex, follow"/);
+assert.equal(redirectTarget("http://wheretowatchfree.com/", ""), "https://wheretowatchfree.com/");
+assert.equal(
+  redirectTarget("http://wheretowatchfree.com/movies/oppenheimer/", ""),
+  "https://wheretowatchfree.com/movies/oppenheimer/"
+);
+assert.equal(redirectTarget("https://wheretowatchfree.com/", ""), "");
+assert.equal(redirectTarget("https://wheretowatchfree.com/", '{"scheme":"http"}'), "https://wheretowatchfree.com/");
+assert.equal(redirectTarget("http://www.wheretowatchfree.com/series/", ""), "https://wheretowatchfree.com/series/");
+assert.equal(redirectTarget("https://www.wheretowatchfree.com/", ""), "https://wheretowatchfree.com/");
+assert.equal(redirectTarget("http://movie-info-site.pages.dev/", ""), "");
 
 const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
 assert.match(home, /lockup-horizontal-light\.svg" alt="WhereToWatchFree"/);
@@ -77,8 +89,9 @@ for (const slug of featured) {
   assert.match(page, /id="person-known-for"><a class="card person-movie-card"/, slug);
   assert.doesNotMatch(page, /Atulit/i, slug);
 }
-assert.ok(sitemap.includes("/search/"));
+assert.ok(!sitemap.includes("<loc>https://wheretowatchfree.com/search/</loc>"));
 assert.ok(sitemap.includes("/page/2/"));
+assert.ok(sitemap.includes("<loc>https://wheretowatchfree.com/series/page/2/</loc>"));
 
 const redirects = fs.readFileSync(path.join(root, "_redirects"), "utf8");
 assert.ok(!/^\s*\/people\//m.test(redirects));
@@ -100,5 +113,113 @@ assert.match(whats, /id="rail-new"><a class="card/);
 assert.match(whats, /id="rail-top"><a class="card/);
 const trending = fs.readFileSync(path.join(root, "trending", "index.html"), "utf8");
 assert.match(trending, /id="trending-grid"[^>]*>\s*<a class="card/);
+
+function metaDesc(html) {
+  const match = html.match(/<meta name="description" content="([^"]*)"/);
+  assert.ok(match);
+  return match[1]
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
+function overviewText(html) {
+  const match = html.match(/<p id="overview">([\s\S]*?)<\/p>/);
+  assert.ok(match);
+  return match[1]
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function jsonLd(html) {
+  const match = html.match(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/);
+  assert.ok(match);
+  return JSON.parse(match[1]);
+}
+
+const oppenheimer = fs.readFileSync(path.join(root, "movies", "oppenheimer", "index.html"), "utf8");
+const opOverview = overviewText(oppenheimer);
+assert.equal(metaDesc(oppenheimer), clipMeta(opOverview));
+assert.doesNotMatch(metaDesc(oppenheimer), /Tubi/);
+assert.match(oppenheimer, /class="card related-card" href="\.\.\/\.\.\/(?:movies|series)\/[^"]+\/"/);
+const opLd = jsonLd(oppenheimer);
+assert.equal(opLd["@type"], "Movie");
+assert.equal(opLd.description, opOverview);
+assert.equal(opLd.aggregateRating, undefined);
+
+const breaking = fs.readFileSync(path.join(root, "series", "breaking-bad", "index.html"), "utf8");
+const bbOverview = overviewText(breaking);
+assert.equal(metaDesc(breaking), clipMeta(bbOverview));
+assert.doesNotMatch(metaDesc(breaking), /Tubi/);
+assert.match(breaking, /class="card related-card" href="\.\.\/\.\.\/series\/[^"]+\/"/);
+const bbLd = jsonLd(breaking);
+assert.equal(bbLd["@type"], "TVSeries");
+assert.equal(bbLd.description, bbOverview);
+assert.equal(bbLd.aggregateRating, undefined);
+
+const thrones = fs.readFileSync(path.join(root, "series", "game-of-thrones", "index.html"), "utf8");
+assert.equal(metaDesc(thrones), clipMeta(overviewText(thrones)));
+assert.doesNotMatch(metaDesc(thrones), /Tubi/);
+
+const knock = fs.readFileSync(path.join(root, "movies", "knock-at-the-cabin", "index.html"), "utf8");
+const knockOverview = overviewText(knock);
+assert.match(knockOverview, /WhereToWatchFree directory/);
+assert.equal(metaDesc(knock), clipMeta(knockOverview));
+assert.equal(jsonLd(knock).description, knockOverview);
+
+const monster = fs.readFileSync(path.join(root, "series", "monster-2022", "index.html"), "utf8");
+assert.match(overviewText(monster), /WhereToWatchFree directory/);
+assert.equal(metaDesc(monster), clipMeta(overviewText(monster)));
+
+const searchFile = fs.readFileSync(path.join(root, "search", "index.html"), "utf8");
+assert.match(searchFile, /name="robots" content="noindex, follow"/);
+
+const seriesIndex = fs.readFileSync(path.join(root, "series", "index.html"), "utf8");
+assert.match(seriesIndex, /id="series-grid"[\s\S]*href="[^"]+\/"/);
+assert.match(seriesIndex, /id="load-more" href="page\/2\/"/);
+const seriesLinks = seriesIndex.match(/<a class="card" href="[^"]+\/"/g) || [];
+assert.ok(seriesLinks.length >= 48);
+const seriesPage2 = fs.readFileSync(path.join(root, "series", "page", "2", "index.html"), "utf8");
+assert.match(seriesPage2, /href="\.\.\/\.\.\/[^"]+\/"/);
+assert.match(seriesPage2, /rel="canonical" href="https:\/\/wheretowatchfree\.com\/series\/page\/2\/"/);
+
+const peopleIndex = fs.readFileSync(path.join(root, "people", "index.html"), "utf8");
+assert.doesNotMatch(peopleIndex, /noindex/);
+assert.doesNotMatch(peopleIndex, /href="\.\/vin-diesel\/"/);
+assert.match(peopleIndex, /href="\.\/tom-holland\/"/);
+const peopleLinks = peopleIndex.match(/href="\.\/[a-z0-9-]+\/"/g) || [];
+assert.equal(peopleLinks.length, 11);
+
+let missingRelated = 0;
+let titled = 0;
+for (const kind of ["movies", "series"]) {
+  const base = path.join(root, kind);
+  for (const name of fs.readdirSync(base)) {
+    const file = path.join(base, name, "index.html");
+    if (!fs.existsSync(file)) continue;
+    const page = fs.readFileSync(file, "utf8");
+    if (!page.includes('id="overview"')) continue;
+    titled += 1;
+    if (!page.includes('class="card related-card" href="')) missingRelated += 1;
+    const story = overviewText(page);
+    if (!story) continue;
+    const data = jsonLd(page);
+    assert.equal(data.description, story, kind + "/" + name);
+    assert.ok(data["@type"] === "Movie" || data["@type"] === "TVSeries", kind + "/" + name);
+    assert.equal(data.aggregateRating, undefined, kind + "/" + name);
+    assert.equal(data["@type"] === "Product" || data["@type"] === "Offer", false);
+  }
+}
+assert.equal(missingRelated, 0);
+assert.ok(titled > 2200);
 
 console.log("seo checks ok");

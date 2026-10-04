@@ -366,7 +366,8 @@ function updateSitemap(indexable, pageCount) {
       return "";
     }
   );
-  const extras = [SITE + "/search/"];
+  xml = xml.replace(/\n  <url><loc>https:\/\/wheretowatchfree\.com\/search\/<\/loc><\/url>/g, "");
+  const extras = [];
   for (let page = 2; page <= pageCount; page++) extras.push(SITE + "/page/" + page + "/");
   const block = extras
     .filter(function (loc) {

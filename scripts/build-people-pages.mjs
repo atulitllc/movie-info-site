@@ -7,8 +7,9 @@
  *   - Emit at most SHELL_CAP per-slug shells (~17k) for the highest-credit set.
  *   - Shared shell at /people/_profile/ + root `_redirects` 200-rewrite for anyone
  *     without a static shell (static assets win over 200 rewrites on CF Pages).
- *   - /people/index.html lists the kept shells (SEO + discovery).
- *   - sitemap.xml lists only kept people URLs (+ /people/).
+ *   - /people/index.html lists only indexable filmography pages (authored bios).
+ *     Thin shells stay noindex, out of the sitemap, and off this index.
+ *   - sitemap.xml lists /people/ plus those filmography URLs only.
  *
  *   node scripts/build-people-pages.mjs
  */
@@ -297,8 +298,11 @@ function ensureProfileShell() {
   fs.writeFileSync(profileFile, PROFILE_HTML);
 }
 
-function writePeopleIndex(keptRows) {
-  const links = keptRows
+function writePeopleIndex(keptRows, reel) {
+  const listed = keptRows.filter(function (row) {
+    return !!(row && row.person && authoredBiography(reel, row.person.slug));
+  });
+  const links = listed
     .map(function (row) {
       const p = row.person;
       const name = p.name || p.slug;
@@ -317,15 +321,15 @@ function writePeopleIndex(keptRows) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>People — Cast &amp; Crew | WhereToWatchFree</title>
-  <meta name="description" content="Browse cast and crew pages in the WhereToWatchFree catalog." />
+  <meta name="description" content="Featured cast and crew with filmography on WhereToWatchFree." />
   <link rel="canonical" href="${siteBase}/people/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="People | WhereToWatchFree" />
-  <meta property="og:description" content="Browse cast and crew pages in the WhereToWatchFree catalog." />
+  <meta property="og:description" content="Featured cast and crew with filmography on WhereToWatchFree." />
   <meta property="og:url" content="${siteBase}/people/" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="People | WhereToWatchFree" />
-  <meta name="twitter:description" content="Browse cast and crew pages in the WhereToWatchFree catalog." />
+  <meta name="twitter:description" content="Featured cast and crew with filmography on WhereToWatchFree." />
   <script src="../js/theme-boot.js"></script>
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
@@ -352,7 +356,7 @@ function writePeopleIndex(keptRows) {
     <article>
       <header class="section" style="padding-bottom:0">
         <h1>People</h1>
-        <p class="muted">${keptRows.length.toLocaleString("en-US")} cast and crew pages with filmography from the catalog. Cast links on title pages open these shells. A name without a shell has no page.</p>
+        <p class="muted">${listed.length.toLocaleString("en-US")} featured cast and crew pages with filmography. Other cast and crew pages are not listed here.</p>
       </header>
       <section class="section">
         <ul class="people-index-list" style="columns:2;gap:2rem;list-style:disc;padding-left:1.25rem">
@@ -454,7 +458,7 @@ const reel = loadCatalog();
 const { kept, total, curatedCount } = selectPeople(reel);
 ensureProfileShell();
 const sync = syncShells(kept, reel);
-writePeopleIndex(kept);
+writePeopleIndex(kept, reel);
 const sitemapCount = updateSitemap(kept.map(function (r) {
   return {
     slug: r.person.slug,
